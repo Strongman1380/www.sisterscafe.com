@@ -6,6 +6,7 @@
   <meta name="description" content="Read the latest blog posts from Sisters Cafe in Geneva, NE. Get recipes, stories, and updates from our kitchen to your table." />
   <meta name="keywords" content="Sisters Cafe blog, Geneva NE, recipes, cafe stories, food blog" />
   <link rel="canonical" href="https://www.sisterscafe.com/blog.html" />
+  <link rel="icon" type="image/jpeg" href="images/sisters-logo.jpeg" />
   <title>Sisters Cafe - Blog</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
@@ -139,9 +140,9 @@
       <h2><i class="fas fa-rss"></i> The Café Chronicle</h2>
       <p style="text-align: center; margin-bottom: 30px;">Stories, recipes, and updates from our kitchen to your table</p>
       
-      <!-- Medium Blog Embed -->
-      <div class="blog-embed-container" style="margin-bottom: 2rem;">
-        <div class="medium-embed-wrapper" style="
+      <!-- Medium Blog Preview -->
+      <div class="blog-preview-container" style="margin-bottom: 2rem;">
+        <div class="medium-preview-wrapper" style="
           width: 100%;
           max-width: 1000px;
           margin: 0 auto;
@@ -149,34 +150,61 @@
           border-radius: 12px;
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
           overflow: hidden;
-          min-height: 600px;
+          min-height: 400px;
+          padding: 3rem 2rem;
+          text-align: center;
         ">
-          <iframe 
-            src="https://medium.com/the-caf%C3%A9-chronicle" 
-            width="100%" 
-            height="800" 
-            frameborder="0" 
-            scrolling="yes"
-            style="
+          <div style="margin-bottom: 2rem;">
+            <i class="fab fa-medium" style="font-size: 4rem; color: #00ab6c; margin-bottom: 1rem; display: block;"></i>
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem; font-size: 2rem;">The Café Chronicle</h3>
+            <p style="color: #666; margin-bottom: 2rem; font-size: 1.2rem; line-height: 1.6;">
+              Discover the heart and soul of Sisters Cafe through our stories, recipes, and community connections. 
+              From family traditions passed down through generations to the daily adventures in our kitchen.
+            </p>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+              <i class="fas fa-book-open" style="color: var(--primary-color); font-size: 2rem; margin-bottom: 1rem;"></i>
+              <h4 style="margin-bottom: 1rem; color: var(--text-dark);">Latest Stories</h4>
+              <p style="color: #666; font-size: 0.95rem;">Read about our daily adventures, customer favorites, and the stories that make Sisters Cafe special.</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+              <i class="fas fa-utensils" style="color: var(--primary-color); font-size: 2rem; margin-bottom: 1rem;"></i>
+              <h4 style="margin-bottom: 1rem; color: var(--text-dark);">Family Recipes</h4>
+              <p style="color: #666; font-size: 0.95rem;">Discover the secrets behind our signature dishes and learn about the family recipes we treasure.</p>
+            </div>
+            <div style="background: #f8f9fa; padding: 2rem; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+              <i class="fas fa-heart" style="color: var(--primary-color); font-size: 2rem; margin-bottom: 1rem;"></i>
+              <h4 style="margin-bottom: 1rem; color: var(--text-dark);">Community Love</h4>
+              <p style="color: #666; font-size: 0.95rem;">Meet the wonderful people of Geneva and hear the stories that connect our community.</p>
+            </div>
+          </div>
+          
+          <div style="margin-top: 2rem;">
+            <a href="https://medium.com/the-caf%C3%A9-chronicle" target="_blank" class="btn btn-primary" style="
+              padding: 15px 30px;
+              font-size: 1.3rem;
+              display: inline-flex;
+              align-items: center;
+              gap: 12px;
+              text-decoration: none;
+              margin-bottom: 1rem;
+              background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
               border: none;
-              border-radius: 12px;
-              background: white;
-            "
-            title="The Café Chronicle - Sisters Cafe Blog"
-            loading="lazy">
-          </iframe>
-        </div>
-        
-        <!-- Fallback for browsers that don't support iframes -->
-        <noscript>
-          <div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 8px; margin-top: 1rem;">
-            <h3>Visit Our Blog</h3>
-            <p>Please visit our blog directly to read our latest posts:</p>
-            <a href="https://medium.com/the-caf%C3%A9-chronicle" target="_blank" class="btn btn-primary" style="margin-top: 1rem;">
+              border-radius: 8px;
+              color: white;
+              font-weight: 600;
+              transition: all 0.3s ease;
+              box-shadow: 0 4px 15px rgba(139, 44, 0, 0.3);
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(139, 44, 0, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(139, 44, 0, 0.3)'">
               <i class="fab fa-medium"></i> Read The Café Chronicle
             </a>
+            <p style="color: #999; font-size: 0.9rem; margin-top: 1rem;">
+              <i class="fas fa-external-link-alt"></i> Opens in a new tab for the best reading experience
+            </p>
           </div>
-        </noscript>
+        </div>
       </div>
       
       <!-- Direct link and additional info -->
@@ -293,72 +321,33 @@
   <script>
     // Blog page specific JavaScript
     document.addEventListener('DOMContentLoaded', function() {
-      const iframe = document.querySelector('.medium-embed-wrapper iframe');
-      const wrapper = document.querySelector('.medium-embed-wrapper');
-      
-      if (iframe && wrapper) {
-        // Handle iframe load
-        iframe.addEventListener('load', function() {
-          wrapper.classList.add('loaded');
-          console.log('Medium blog loaded successfully');
-        });
-        
-        // Handle iframe error
-        iframe.addEventListener('error', function() {
-          console.log('Error loading Medium blog, showing fallback');
-          showFallback();
-        });
-        
-        // Timeout fallback (if iframe takes too long to load)
-        setTimeout(function() {
-          if (!wrapper.classList.contains('loaded')) {
-            console.log('Medium blog loading timeout, showing fallback');
-            showFallback();
-          }
-        }, 10000); // 10 second timeout
-      }
-      
-      function showFallback() {
-        const fallbackHTML = `
-          <div style="
-            text-align: center; 
-            padding: 3rem 2rem; 
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 12px;
-            border: 2px dashed #dee2e6;
-          ">
-            <i class="fab fa-medium" style="font-size: 3rem; color: #00ab6c; margin-bottom: 1rem;"></i>
-            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Visit The Café Chronicle</h3>
-            <p style="color: #666; margin-bottom: 2rem; font-size: 1.1rem;">
-              Our blog is best experienced directly on Medium for optimal reading and interaction.
-            </p>
-            <a href="https://medium.com/the-caf%C3%A9-chronicle" target="_blank" class="btn btn-primary" style="
-              padding: 15px 30px;
-              font-size: 1.2rem;
-              display: inline-flex;
-              align-items: center;
-              gap: 10px;
-              text-decoration: none;
-            ">
-              <i class="fab fa-medium"></i> Read The Café Chronicle
-            </a>
-            <p style="color: #999; margin-top: 1rem; font-size: 0.9rem;">
-              <i class="fas fa-external-link-alt"></i> Opens in a new tab
-            </p>
-          </div>
-        `;
-        
-        if (wrapper) {
-          wrapper.innerHTML = fallbackHTML;
-        }
-      }
-      
       // Add click tracking for analytics (optional)
       document.querySelectorAll('a[href*="medium.com"]').forEach(function(link) {
         link.addEventListener('click', function() {
           console.log('Medium blog link clicked:', this.href);
           // You can add analytics tracking here if needed
+          
+          // Add a subtle animation when clicked
+          this.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            this.style.transform = 'scale(1)';
+          }, 150);
         });
+      });
+      
+      // Add hover effects to the preview cards
+      document.querySelectorAll('.medium-preview-wrapper > div > div').forEach(function(card) {
+        if (card.style.background === '#f8f9fa') {
+          card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.1)';
+          });
+          
+          card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+          });
+        }
       });
     });
   </script>

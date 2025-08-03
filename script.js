@@ -9,6 +9,33 @@ let cart = [];
 // Use menuData from menu-data.js or fallback to default
 let menuItems = [];
 
+// Enhanced error handling and accessibility
+function safeQuerySelector(selector) {
+  try {
+    const element = document.querySelector(selector);
+    if (!element) {
+      console.warn(`Element not found: ${selector}`);
+    }
+    return element;
+  } catch (error) {
+    console.error(`Error selecting element: ${selector}`, error);
+    return null;
+  }
+}
+
+function safeGetElementById(id) {
+  try {
+    const element = document.getElementById(id);
+    if (!element) {
+      console.warn(`Element not found: ${id}`);
+    }
+    return element;
+  } catch (error) {
+    console.error(`Error getting element by ID: ${id}`, error);
+    return null;
+  }
+}
+
 // Initialize menuItems from menuData when available
 function initializeMenu() {
   console.log('Initializing menu data');
@@ -100,10 +127,17 @@ const siteConfig = {
 console.log('Sisters Cafe website initialized');
 console.log('Menu data loaded:', menuItems);
 
+// HTML escaping function for security
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 // Function to render the menu
 function renderMenu(filteredCategory = 'all') {
   console.log('Rendering menu with filter:', filteredCategory);
-  const menuContainer = document.getElementById("menu-container");
+  const menuContainer = safeGetElementById("menu-container");
   
   if (!menuContainer) {
     console.error('Menu container not found!');
@@ -116,7 +150,12 @@ function renderMenu(filteredCategory = 'all') {
   // Check if menuItems exists and has items
   if (!menuItems || menuItems.length === 0) {
     console.error('No menu data available!');
-    menuContainer.innerHTML = '<p>Sorry, menu data could not be loaded. Please try again later.</p>';
+    menuContainer.innerHTML = `
+      <div role="alert" class="error-message">
+        <p>Sorry, menu data could not be loaded. Please try again later.</p>
+        <button onclick="location.reload()" class="btn btn-secondary">Reload Page</button>
+      </div>
+    `;
     return;
   }
   
@@ -138,11 +177,17 @@ function renderMenu(filteredCategory = 'all') {
       const li = document.createElement("li");
       li.innerHTML = `
         <div>
-          <span class="item-name">${item.name}</span>
-          <span class="item-price">${item.price.toFixed(2)}</span>
+          <span class="item-name">${escapeHtml(item.name)}</span>
+          <span class="item-price">$${item.price.toFixed(2)}</span>
         </div>
         <div>
-          <button class="btn-add-to-cart" data-name="${item.name}" data-price="${item.price}">Add to Cart</button>
+          <button class="btn-add-to-cart" 
+                  data-name="${escapeHtml(item.name)}" 
+                  data-price="${item.price}"
+                  aria-label="Add ${escapeHtml(item.name)} to cart for $${item.price.toFixed(2)}"
+                  type="button">
+            <i class="fas fa-plus" aria-hidden="true"></i> Add to Cart
+          </button>
         </div>
       `;
       ul.appendChild(li);
