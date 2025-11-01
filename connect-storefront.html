@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Storefront - Sisters Cafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Storefront-specific styles */
+        .storefront-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .storefront-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: var(--white);
+            border-radius: var(--radius-lg);
+        }
+
+        .storefront-header h1 {
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .products-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .product-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: var(--secondary-color);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text-light);
+        }
+
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .merchant-info {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .merchant-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .merchant-id {
+            color: var(--text-light);
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        .btn-buy {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .btn-buy:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-buy:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .cart-section {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--white);
+            border: 2px solid var(--primary-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            min-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .cart-item-merchant {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .cart-item-price {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .cart-total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-align: center;
+            margin: 1rem 0;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .btn-checkout {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .btn-checkout:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-checkout:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .cart-section {
+                position: static;
+                margin-bottom: 2rem;
+                min-width: auto;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="storefront-container">
+        <!-- Header -->
+        <div class="storefront-header">
+            <h1>🛍️ Marketplace Storefront</h1>
+            <p>Discover products from our amazing merchants</p>
+        </div>
+
+        <!-- Alerts -->
+        <div id="alerts"></div>
+
+        <!-- Cart Section (Desktop) -->
+        <div class="cart-section" id="cart-section">
+            <div class="cart-header">
+                <h3>🛒 Cart</h3>
+                <button id="clear-cart" class="btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Clear</button>
+            </div>
+            <div id="cart-items">
+                <div class="empty-state">
+                    <div class="empty-state-icon">🛒</div>
+                    <p>Your cart is empty</p>
+                </div>
+            </div>
+            <div id="cart-total" class="cart-total hidden">
+                Total: $0.00
+            </div>
+            <button id="checkout-btn" class="btn-checkout hidden" disabled>
+                Checkout
+            </button>
+        </div>
+
+        <!-- Products Section -->
+        <div class="products-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Available Products</h2>
+                <button id="refresh-products" class="btn btn-secondary">
+                    <span id="refresh-text">Refresh</span>
+                    <span id="refresh-loading" class="loading hidden"></span>
+                </button>
+            </div>
+            
+            <div id="products-container">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <p>Loading products...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Link -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="connect-dashboard.html" class="btn btn-secondary">
+                🏪 Admin Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+        
+        // Store products and cart
+        let products = [];
+        let cart = [];
+
+        // DOM elements
+        const productsContainer = document.getElementById('products-container');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalElement = document.getElementById('cart-total');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const alertsContainer = document.getElementById('alerts');
+        const refreshBtn = document.getElementById('refresh-products');
+
+        // Initialize the storefront
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🛍️ Storefront initialized');
+            
+            // Set up event listeners
+            refreshBtn.addEventListener('click', loadProducts);
+            checkoutBtn.addEventListener('click', handleCheckout);
+            document.getElementById('clear-cart').addEventListener('click', clearCart);
+
+            // Load initial data
+            loadProducts();
+        });
+
+        // Show alert message
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertsContainer.appendChild(alert);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 5000);
+        }
+
+        // Load products from API
+        async function loadProducts() {
+            const refreshText = document.getElementById('refresh-text');
+            const refreshLoading = document.getElementById('refresh-loading');
+            
+            refreshText.classList.add('hidden');
+            refreshLoading.classList.remove('hidden');
+            refreshBtn.disabled = true;
+
+            try {
+                console.log('Loading products...');
+
+                const response = await fetch(`${API_BASE}/api/connect/products`);
+                const result = await response.json();
+
+                if (result.success) {
+                    products = result.products;
+                    updateProductsDisplay();
+                    console.log(`Loaded ${products.length} products`);
+                    
+                    if (products.length === 0) {
+                        showAlert('No products available. Create some products in the admin dashboard!', 'info');
+                    }
+                } else {
+                    console.error('Failed to load products:', result.message);
+                    showAlert(`Failed to load products: ${result.message}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                showAlert(`Error loading products: ${error.message}`, 'error');
+            } finally {
+                refreshText.classList.remove('hidden');
+                refreshLoading.classList.add('hidden');
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Update products display
+        function updateProductsDisplay() {
+            if (products.length === 0) {
+                productsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📦</div>
+                        <p>No products available yet</p>
+                        <p style="font-size: 0.9rem; color: var(--text-light);">
+                            Create products in the <a href="connect-dashboard.html">admin dashboard</a>
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            const productsHtml = `
+                <div class="products-grid">
+                    ${products.map(product => `
+                        <div class="product-card">
+                            <div class="product-image">🍽️</div>
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-description">${product.description || 'No description available'}</div>
+                            <div class="product-price">$${(product.price_in_cents / 100).toFixed(2)}</div>
+                            <div class="merchant-info">
+                                <div class="merchant-name">by ${product.merchant_name}</div>
+                                <div class="merchant-id">${product.connected_account_id}</div>
+                            </div>
+                            <button class="btn-buy" onclick="addToCart('${product.id}')">
+                                Add to Cart
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            productsContainer.innerHTML = productsHtml;
+        }
+
+        // Add product to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) {
+                showAlert('Product not found', 'error');
+                return;
+            }
+
+            // Check if product is already in cart
+            const existingItem = cart.find(item => item.product_id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    product_id: productId,
+                    name: product.name,
+                    price_in_cents: product.price_in_cents,
+                    merchant_name: product.merchant_name,
+                    connected_account_id: product.connected_account_id,
+                    price_id: product.price_id,
+                    quantity: 1
+                });
+            }
+
+            updateCartDisplay();
+            showAlert(`Added ${product.name} to cart`, 'success');
+        }
+
+        // Remove product from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.product_id !== productId);
+            updateCartDisplay();
+        }
+
+        // Clear cart
+        function clearCart() {
+            cart = [];
+            updateCartDisplay();
+            showAlert('Cart cleared', 'info');
+        }
+
+        // Update cart display
+        function updateCartDisplay() {
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🛒</div>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+                cartTotalElement.classList.add('hidden');
+                checkoutBtn.classList.add('hidden');
+                return;
+            }
+
+            // Calculate total
+            const total = cart.reduce((sum, item) => sum + (item.price_in_cents * item.quantity), 0);
+
+            // Update cart items
+            const cartHtml = cart.map(item => `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name} x${item.quantity}</div>
+                        <div class="cart-item-merchant">by ${item.merchant_name}</div>
+                    </div>
+                    <div>
+                        <div class="cart-item-price">$${((item.price_in_cents * item.quantity) / 100).toFixed(2)}</div>
+                        <button onclick="removeFromCart('${item.product_id}')" 
+                                style="background: none; border: none; color: var(--text-light); cursor: pointer; font-size: 0.8rem;">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            cartItemsContainer.innerHTML = cartHtml;
+
+            // Update total
+            cartTotalElement.textContent = `Total: $${(total / 100).toFixed(2)}`;
+            cartTotalElement.classList.remove('hidden');
+
+            // Show checkout button
+            checkoutBtn.classList.remove('hidden');
+            
+            // Check if all items are from same merchant (required for this demo)
+            const uniqueAccounts = new Set(cart.map(item => item.connected_account_id));
+            if (uniqueAccounts.size > 1) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.textContent = 'Multi-merchant checkout not supported';
+            } else {
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = 'Checkout';
+            }
+        }
+
+        // Handle checkout
+        async function handleCheckout() {
+            if (cart.length === 0) {
+                showAlert('Cart is empty', 'error');
+                return;
+            }
+
+            // Check for multi-merchant cart
+            const uniqueAccounts = new Set(cart.map(item => item.connected_account_id));
+            if (uniqueAccounts.size > 1) {
+                showAlert('Multi-merchant checkout is not supported in this demo', 'error');
+                return;
+            }
+
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = 'Creating checkout...';
+
+            try {
+                // Prepare checkout data
+                const items = cart.map(item => ({
+                    price_id: item.price_id,
+                    quantity: item.quantity,
+                    connected_account_id: item.connected_account_id
+                }));
+
+                console.log('Creating checkout session:', items);
+
+                const response = await fetch(`${API_BASE}/api/connect/checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        items: items,
+                        success_url: `${window.location.origin}/connect/success?session_id={CHECKOUT_SESSION_ID}`,
+                        cancel_url: window.location.href
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    console.log('Checkout session created:', result.checkout_session.id);
+                    showAlert('Redirecting to checkout...', 'info');
+                    
+                    // Redirect to Stripe Checkout
+                    window.location.href = result.checkout_session.url;
+                } else {
+                    showAlert(`Checkout failed: ${result.message}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error creating checkout:', error);
+                showAlert(`Checkout error: ${error.message}`, 'error');
+            } finally {
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = 'Checkout';
+            }
+        }
+    </script>
+</body>
+</html>

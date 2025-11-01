@@ -3,6 +3,20 @@
  * Enhanced with dynamic features and improved user experience
  */
 
+// Register service worker for offline caching and to clear legacy implementations
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((registration) => {
+        console.log('Service worker registered with scope:', registration.scope);
+      })
+      .catch((error) => {
+        console.error('Service worker registration failed:', error);
+      });
+  });
+}
+
 // Initialize cart array
 let cart = [];
 
@@ -100,12 +114,12 @@ const siteConfig = {
   email: "sisterscafe806@gmail.com",
   address: "310 S 13th St, Geneva, NE 68361",
   hours: {
-    Monday: "7AM–2PM",
-    Tuesday: "7AM–2PM",
-    Wednesday: "7AM–2PM",
-    Thursday: "7AM–2PM",
-    Friday: "7AM–2PM",
-    Saturday: "7AM–2PM",
+    Monday: "6AM–2PM",
+    Tuesday: "6AM–2PM",
+    Wednesday: "6AM–2PM",
+    Thursday: "6AM–2PM",
+    Friday: "6AM–2PM",
+    Saturday: "6AM–2PM",
     Sunday: "Closed"
   },
   socialMedia: {
@@ -768,123 +782,4 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 });
-          const name = document.getElementById("name").value;
-          const phone = document.getElementById("phone").value;
-          const email = document.getElementById("email").value || "Not provided";
-          const pickupTime = document.getElementById("pickup-time").value;
-          const specialInstructions = document.getElementById("special-instructions").value || "None";
-          const notifyByText = document.getElementById("notify-text").checked;
-          const notifyByEmail = document.getElementById("notify-email").checked;
-          
-          // In a real application, you would send this data to a server
-          console.log("Order submitted:", {
-            name,
-            phone,
-            email,
-            pickupTime,
-            specialInstructions,
-            notifyByText,
-            notifyByEmail,
-            cart
-          });
-          
-          // Prepare order details for notifications
-          const orderSummary = formatOrderSummary(cart);
-          const orderDetails = {
-            name,
-            phone,
-            email,
-            pickupTime,
-            specialInstructions,
-            items: orderSummary.items,
-            subtotal: orderSummary.subtotal,
-            tax: orderSummary.tax,
-            total: orderSummary.total,
-            orderNumber: Math.floor(Math.random() * 10000).toString().padStart(4, '0')
-          };
-          
-          // Hide the form elements immediately
-          form.style.display = "none";
-          
-          // Get message element
-          const messageElement = document.getElementById("order-message");
-          
-          // Show loading indicator while sending notifications
-          messageElement.style.display = "block";
-          messageElement.innerHTML = `
-            <div class="order-confirmation" style="text-align: center;">
-              <p><i>Processing your order...</i></p>
-              <div class="loading-spinner"></div>
-            </div>
-          `;
-          
-          // Send notifications based on user preferences
-          const notifications = [];
-          if (notifyByText) {
-            notifications.push(sendNotification('SMS', phone, orderDetails));
-          }
-          if (notifyByEmail && email !== "Not provided") {
-            notifications.push(sendNotification('Email', email, orderDetails));
-          }
-          
-          // Wait for all notifications to complete
-          Promise.all(notifications).then(() => {
-            console.log('All notifications sent successfully');
-            
-            // Update confirmation message
-            messageElement.innerHTML = `
-              <div class="order-confirmation">
-                <h4>Thank you for your order, ${name}!</h4>
-                <p>Your order has been received. <strong>Please call the cafe at (402) 759-4144 to confirm your pickup time.</strong></p>
-                ${notifyByText ? '<p>We will send a text confirmation to your phone number.</p>' : ''}
-                ${notifyByEmail && email !== "Not provided" ? '<p>We will send an email confirmation to ' + email + '.</p>' : ''}
-                <p>Order reference: <span class="order-reference">#${orderDetails.orderNumber}</span></p>
-                <p style="font-size: 0.9em; margin-top: 15px;">If you don't receive your notification within a few minutes, please check your spam folder or contact us directly.</p>
-              </div>
-            `;
-          }).catch(error => {
-            console.error('Error sending notifications:', error);
-            
-            // Show error message
-            messageElement.innerHTML = `
-              <div class="order-confirmation" style="border-left-color: #dc3545;">
-                <h4 style="color: #dc3545;">Order Received</h4>
-                <p>Your order has been received, but we couldn't send the notification. <strong>Please call the cafe at (402) 759-4144 to confirm your pickup time.</strong></p>
-                <p>Order reference: <span class="order-reference">#${orderDetails.orderNumber}</span></p>
-              </div>
-            `;
-          });
 
-          // Clear the cart
-          cart = [];
-          updateCart();
-          
-          // Remove the form after 15 seconds
-          setTimeout(() => orderForm.remove(), 15000);
-        });
-      }
-    });
-  }
-  
-  // Handle clear cart button - only on menu page
-  const clearCartButton = document.getElementById('clear-cart-btn');
-  if (clearCartButton) {
-    clearCartButton.addEventListener('click', () => {
-      if (cart.length === 0) {
-        alert('Your cart is already empty!');
-        return;
-      }
-      
-      if (confirm('Are you sure you want to clear your cart?')) {
-        cart = [];
-        updateCart();
-      }
-    });
-  }
-  
-  // Handle meal calculator - only on menu page
-  const calculateButton = document.getElementById('calculate-btn');
-  if (calculateButton) {
-    calculateButton.addEventListener('click', calculateMealTotal);
-  }
-});

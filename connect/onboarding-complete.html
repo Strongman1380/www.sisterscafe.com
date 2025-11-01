@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Complete - Sisters Cafe</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        .onboarding-container {
+            max-width: 600px;
+            margin: 4rem auto;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .onboarding-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 3px solid var(--primary-color);
+        }
+
+        .onboarding-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .onboarding-title {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .onboarding-message {
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .account-info {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            transition: var(--transition);
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-color);
+        }
+
+        .next-steps {
+            background: var(--secondary-color);
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .next-steps h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .next-steps ul {
+            margin-left: 1.5rem;
+        }
+
+        .next-steps li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="onboarding-container">
+        <div class="onboarding-card">
+            <div class="onboarding-icon">🎉</div>
+            <h1 class="onboarding-title">Onboarding Complete!</h1>
+            <div class="onboarding-message">
+                <p>Congratulations! Your account has been successfully set up and you're ready to start accepting payments.</p>
+            </div>
+            
+            <div id="account-details" class="account-info">
+                <div>Account ID: <span id="account-id">Loading...</span></div>
+            </div>
+
+            <div class="next-steps">
+                <h3>🚀 What's Next?</h3>
+                <ul>
+                    <li>Your account is now ready to accept payments</li>
+                    <li>You can create products for your business</li>
+                    <li>Customers can purchase your products through the marketplace</li>
+                    <li>Funds will be transferred to your account automatically</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <a href="../connect-dashboard.html" class="btn">
+                    🏪 Go to Dashboard
+                </a>
+                <a href="../connect-storefront.html" class="btn btn-secondary">
+                    🛍️ View Storefront
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get account ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const accountId = urlParams.get('account_id');
+
+        if (accountId) {
+            document.getElementById('account-id').textContent = accountId;
+            console.log('Onboarding completed for account:', accountId);
+            
+            // Redirect to dashboard with refresh parameter after 3 seconds
+            setTimeout(() => {
+                window.location.href = `../connect-dashboard.html?refresh=${accountId}`;
+            }, 3000);
+        } else {
+            document.getElementById('account-id').textContent = 'Not provided';
+        }
+    </script>
+</body>
+</html>

@@ -96,16 +96,21 @@ const menuData = [
     }
 ];
 
-// Make menuData available globally
-window.menuData = menuData;
-console.log('Menu data exported to window.menuData:', menuData);
+// Make menuData available globally when running in the browser
+if (typeof window !== 'undefined') {
+    window.menuData = menuData;
+    console.log('Menu data exported to window.menuData:', menuData);
+}
+
+// Make menuData globally available
+if (typeof window !== 'undefined') {
+    window.menuData = menuData;
+}
 
 // Trigger a custom event to notify that menu data is loaded
 if (typeof document !== 'undefined') {
     document.dispatchEvent(new CustomEvent('menuDataLoaded', { detail: menuData }));
 }
 
-// For compatibility with module systems
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { menuData };
-}
+// ES module export (for Node.js API use only)
+// export { menuData };

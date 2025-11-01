@@ -10,7 +10,7 @@ When a customer completes an order on the website, an SMS notification is sent t
 
 1. `twilio-service.js` - Client-side JavaScript for formatting and sending SMS notifications
 2. `menu-script.js` - Modified to call the SMS service when an order is submitted
-3. `menu_new.html` - Updated to include the Twilio service script
+3. `menu.html` - Updated to include the Twilio service script
 4. `serverless/send-sms.js` - Serverless function for securely sending SMS via Twilio API
 
 ## Setup Instructions

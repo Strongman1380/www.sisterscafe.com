@@ -1,0 +1,35 @@
+{
+  "name": "sisters-cafe",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Sisters Cafe online ordering system with automatic notifications",
+  "main": "dev-server.js",
+  "scripts": {
+    "dev": "node dev-server.js",
+    "start": "node dev-server.js",
+    "test": "node test-notifications.js",
+    "stripe:demo": "node scripts/demo-stripe-checkout.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "nodemailer": "^6.10.1",
+    "stripe": "^14.0.0",
+    "twilio": "^4.19.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.0"
+  },
+  "keywords": [
+    "restaurant",
+    "ordering",
+    "stripe",
+    "notifications",
+    "sms",
+    "email"
+  ],
+  "author": "Sisters Cafe",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

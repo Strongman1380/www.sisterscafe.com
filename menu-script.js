@@ -386,16 +386,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const confirmationModal = document.getElementById('confirmation-modal');
   const closeModalBtn = document.getElementById('close-modal');
   const cancelOrderBtn = document.getElementById('cancel-order');
-  const callNowBtn = document.getElementById('call-now');
   const submitOrderBtn = document.getElementById('submit-order');
-  const pickupOptionBtn = document.getElementById('pickup-option');
-  const phoneOptionBtn = document.getElementById('phone-option');
   const onlineOrderForm = document.getElementById('online-order-form');
-  const callInMessage = document.getElementById('call-in-message');
   const pickupTimeSelect = document.getElementById('pickup-time');
   const customTimeContainer = document.getElementById('custom-time-container');
   const customPickupTime = document.getElementById('custom-pickup-time');
-  const closeConfirmationBtn = document.getElementById('close-confirmation');
+  const closeConfirmationBtn = document.getElementById('close-confirmation-btn');
   const closeConfirmationXBtn = document.getElementById('close-confirmation');
   
   // Function to open checkout modal
@@ -403,16 +399,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (modal) {
       modal.classList.add('active');
       document.body.style.overflow = 'hidden'; // Prevent scrolling
-      
-      // Default to pickup option
-      if (pickupOptionBtn) {
-        pickupOptionBtn.classList.add('active');
-        phoneOptionBtn.classList.remove('active');
-        onlineOrderForm.style.display = 'block';
-        callInMessage.style.display = 'none';
-        callNowBtn.style.display = 'none';
-        submitOrderBtn.style.display = 'block';
-      }
     }
   }
   
@@ -451,33 +437,6 @@ document.addEventListener('DOMContentLoaded', function() {
   
   if (cancelOrderBtn) {
     cancelOrderBtn.addEventListener('click', closeModal);
-  }
-  
-  if (callNowBtn) {
-    callNowBtn.addEventListener('click', function() {
-      window.location.href = 'tel:4027594144';
-    });
-  }
-  
-  // Handle order type selection
-  if (pickupOptionBtn && phoneOptionBtn) {
-    pickupOptionBtn.addEventListener('click', function() {
-      pickupOptionBtn.classList.add('active');
-      phoneOptionBtn.classList.remove('active');
-      onlineOrderForm.style.display = 'block';
-      callInMessage.style.display = 'none';
-      callNowBtn.style.display = 'none';
-      submitOrderBtn.style.display = 'block';
-    });
-    
-    phoneOptionBtn.addEventListener('click', function() {
-      phoneOptionBtn.classList.add('active');
-      pickupOptionBtn.classList.remove('active');
-      onlineOrderForm.style.display = 'none';
-      callInMessage.style.display = 'block';
-      callNowBtn.style.display = 'block';
-      submitOrderBtn.style.display = 'none';
-    });
   }
   
   // Handle custom pickup time
@@ -580,159 +539,204 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Handle order submission
+  // Handle order submission with Email
   if (submitOrderBtn) {
-    submitOrderBtn.addEventListener('click', function(e) {
+    submitOrderBtn.addEventListener('click', async function(e) {
       e.preventDefault();
-      
-      // Validate form
-      const customerName = document.getElementById('customer-name').value.trim();
-      const customerPhone = document.getElementById('customer-phone').value.trim();
-      const pickupTime = document.getElementById('pickup-time').value;
-      const orderNotes = document.getElementById('order-notes').value.trim();
-      
+
+      // Validate form - with null checks
+      const customerNameEl = document.getElementById('customer-name');
+      const customerPhoneEl = document.getElementById('customer-phone');
+      const customerEmailEl = document.getElementById('customer-email');
+      const pickupTimeEl = document.getElementById('pickup-time');
+      const orderNotesEl = document.getElementById('order-notes');
+
+      if (!customerNameEl || !customerPhoneEl || !customerEmailEl || !pickupTimeEl || !orderNotesEl) {
+        alert('Form error: Please refresh the page and try again.');
+        console.error('Missing form elements:', {
+          customerName: !!customerNameEl,
+          customerPhone: !!customerPhoneEl,
+          customerEmail: !!customerEmailEl,
+          pickupTime: !!pickupTimeEl,
+          orderNotes: !!orderNotesEl
+        });
+        return;
+      }
+
+      const customerName = customerNameEl.value.trim();
+      const customerPhone = customerPhoneEl.value.trim();
+      const customerEmail = customerEmailEl.value.trim();
+      const pickupTime = pickupTimeEl.value;
+      const orderNotes = orderNotesEl.value.trim();
+
       // Basic validation
       if (!customerName) {
         alert('Please enter your name');
         return;
       }
-      
+
       if (!customerPhone) {
         alert('Please enter your phone number');
         return;
       }
-      
+
+      if (!customerEmail) {
+        alert('Please enter your email address');
+        return;
+      }
+
       if (!pickupTime) {
         alert('Please select a pickup time');
         return;
       }
-      
+
       if (pickupTime === 'custom' && !document.getElementById('custom-pickup-time').value) {
         alert('Please specify a pickup time');
         return;
       }
-      
-      // Get formatted pickup time
-      let formattedPickupTime;
-      if (pickupTime === 'asap') {
-        formattedPickupTime = 'As soon as possible';
-      } else if (pickupTime === 'custom') {
-        formattedPickupTime = document.getElementById('custom-pickup-time').value;
-      } else {
-        const timeMap = {
-          '15min': '15 minutes',
-          '30min': '30 minutes',
-          '45min': '45 minutes',
-          '60min': '1 hour'
+
+      if (cart.length === 0) {
+        alert('Your cart is empty');
+        return;
+      }
+
+      // Disable submit button to prevent double submission
+      submitOrderBtn.disabled = true;
+      submitOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Order...';
+
+      try {
+        // Get formatted pickup time
+        let formattedPickupTime;
+        if (pickupTime === 'asap') {
+          formattedPickupTime = 'As soon as possible (20-30 min)';
+        } else if (pickupTime === 'custom') {
+          formattedPickupTime = document.getElementById('custom-pickup-time').value;
+        } else {
+          const timeMap = {
+            '30min': 'In 30 minutes',
+            '45min': 'In 45 minutes',
+            '60min': 'In 1 hour'
+          };
+          formattedPickupTime = timeMap[pickupTime] || pickupTime;
+        }
+
+        // Calculate totals
+        let subtotal = 0;
+        cart.forEach(item => {
+          subtotal += item.price * item.quantity;
+        });
+        const tax = subtotal * 0.075;
+        const total = subtotal + tax;
+
+        // Format order items for email
+        const orderItemsHTML = cart.map(item =>
+          `<li style="margin-bottom: 8px; padding: 8px; background-color: #f9f9f9; border-radius: 4px;">
+            <strong>${item.name}</strong> x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}
+          </li>`
+        ).join('');
+
+        const orderItemsText = cart.map(item =>
+          `${item.name} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`
+        ).join('\n');
+
+        // Generate order number
+        const orderNumber = 'SC' + Date.now().toString().slice(-8);
+
+        // Prepare email content using EmailJS
+        const emailParams = {
+          to_email: 'sisterscafe28@gmail.com',
+          from_name: customerName,
+          customer_name: customerName,
+          customer_phone: customerPhone,
+          customer_email: customerEmail,
+          pickup_time: formattedPickupTime,
+          order_notes: orderNotes || 'None',
+          order_number: orderNumber,
+          order_items_html: orderItemsHTML,
+          order_items_text: orderItemsText,
+          subtotal: subtotal.toFixed(2),
+          tax: tax.toFixed(2),
+          total: total.toFixed(2),
+          order_date: new Date().toLocaleString()
         };
-        formattedPickupTime = timeMap[pickupTime] || pickupTime;
+
+        // Send email using EmailJS
+        const SERVICE_ID = 'service_4x3qqp1';
+        const TEMPLATE_ID = 'template_u05esja';
+
+        console.log('🔧 EmailJS Configuration:', {
+          emailjsLoaded: typeof emailjs !== 'undefined',
+          serviceId: SERVICE_ID,
+          templateId: TEMPLATE_ID
+        });
+
+        if (typeof emailjs !== 'undefined' && SERVICE_ID !== 'YOUR_SERVICE_ID' && TEMPLATE_ID !== 'YOUR_TEMPLATE_ID') {
+          try {
+            console.log('📤 Attempting to send email with params:', emailParams);
+            const response = await emailjs.send(SERVICE_ID, TEMPLATE_ID, emailParams);
+            console.log('✅ Order email sent successfully to sisterscafe28@gmail.com!');
+            console.log('📧 EmailJS Response:', response);
+          } catch (emailError) {
+            console.error('❌ Email sending failed:', emailError);
+            console.error('Error details:', {
+              message: emailError.message,
+              text: emailError.text,
+              status: emailError.status
+            });
+            console.log('📧 Order details (email not sent):', emailParams);
+          }
+        } else {
+          // EmailJS not configured - just log order for development/testing
+          console.log('📧 EmailJS not configured. Order logged to console:');
+          console.log('To: sisterscafe28@gmail.com');
+          console.log('Order Number:', orderNumber);
+          console.log('Customer:', customerName);
+          console.log('Phone:', customerPhone);
+          console.log('Email:', customerEmail);
+          console.log('Pickup Time:', formattedPickupTime);
+          console.log('Order Items:');
+          cart.forEach(item => {
+            console.log(`  - ${item.name} x${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`);
+          });
+          console.log('Subtotal: $' + subtotal.toFixed(2));
+          console.log('Tax: $' + tax.toFixed(2));
+          console.log('Total: $' + total.toFixed(2));
+          console.log('Notes:', orderNotes || 'None');
+          console.log('\n💡 To enable email notifications, configure EmailJS at https://www.emailjs.com/');
+        }
+
+        // Close checkout modal
+        closeModal();
+
+        // Show confirmation modal with null checks
+        const orderNumberEl = document.getElementById('order-number');
+        const confNameEl = document.getElementById('conf-name');
+        const confTimeEl = document.getElementById('conf-time');
+        const confTotalEl = document.getElementById('conf-total');
+
+        if (orderNumberEl) orderNumberEl.textContent = orderNumber;
+        if (confNameEl) confNameEl.textContent = customerName;
+        if (confTimeEl) confTimeEl.textContent = formattedPickupTime;
+        if (confTotalEl) confTotalEl.textContent = '$' + total.toFixed(2);
+
+        openConfirmationModal();
+
+        // Clear the cart
+        cart = [];
+        updateCart();
+
+        // Reset form
+        document.getElementById('online-order-form').reset();
+
+      } catch (error) {
+        console.error('Error submitting order:', error);
+        alert('Sorry, there was an error submitting your order. Please try again or call us at (402) 759-4144 to place your order.');
+
+        // Re-enable submit button
+        submitOrderBtn.disabled = false;
+        submitOrderBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
       }
-      
-      // Calculate order total
-      let subtotal = 0;
-      cart.forEach(item => {
-        subtotal += item.price * item.quantity;
-      });
-      
-      const taxRate = 0.075;
-      const tax = subtotal * taxRate;
-      const total = subtotal + tax;
-      
-      // Generate order number (timestamp-based)
-      const orderNumber = 'SC' + Date.now().toString().slice(-6);
-      
-      // Prepare order data
-      const orderData = {
-        orderNumber: orderNumber,
-        customerName: customerName,
-        customerPhone: customerPhone,
-        pickupTime: formattedPickupTime,
-        orderNotes: orderNotes,
-        items: cart.map(item => ({
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          total: item.price * item.quantity
-        })),
-        subtotal: subtotal,
-        tax: tax,
-        total: total,
-        orderDate: new Date().toISOString()
-      };
-      
-      // In a real implementation, you would send this data to your server
-      // For now, we'll simulate a successful order submission
-      console.log('Order submitted:', orderData);
-      
-      // Send order to email service
-      sendOrderEmail(orderData);
-      
-      // Send SMS notification to the store
-      if (window.sendOrderSMS) {
-        window.sendOrderSMS(orderData)
-          .then(result => console.log('SMS notification result:', result))
-          .catch(error => console.error('Error sending SMS notification:', error));
-      } else {
-        console.error('SMS service not available');
-      }
-      
-      // Update confirmation modal with order details
-      document.getElementById('order-number').textContent = orderNumber;
-      document.getElementById('conf-name').textContent = customerName;
-      document.getElementById('conf-time').textContent = formattedPickupTime;
-      document.getElementById('conf-total').textContent = `$${total.toFixed(2)}`;
-      
-      // Close checkout modal and open confirmation
-      closeModal();
-      openConfirmationModal();
     });
-  }
-  
-  // Function to send order email
-  function sendOrderEmail(orderData) {
-    // Format the order items for email
-    let itemsHtml = '';
-    orderData.items.forEach(item => {
-      itemsHtml += `${item.name} x ${item.quantity} - $${item.total.toFixed(2)}<br>`;
-    });
-    
-    // Format the email body
-    const emailBody = `
-      <h2>New Online Order #${orderData.orderNumber}</h2>
-      <p><strong>Customer:</strong> ${orderData.customerName}</p>
-      <p><strong>Phone:</strong> ${orderData.customerPhone}</p>
-      <p><strong>Pickup Time:</strong> ${orderData.pickupTime}</p>
-      <p><strong>Order Notes:</strong> ${orderData.orderNotes || 'None'}</p>
-      <h3>Order Items:</h3>
-      <p>${itemsHtml}</p>
-      <p><strong>Subtotal:</strong> $${orderData.subtotal.toFixed(2)}</p>
-      <p><strong>Tax (7.5%):</strong> $${orderData.tax.toFixed(2)}</p>
-      <p><strong>Total:</strong> $${orderData.total.toFixed(2)}</p>
-      <p>Order placed on: ${new Date().toLocaleString()}</p>
-    `;
-    
-    // In a production environment, you would send this to your server
-    // For now, we'll use a simple mailto link as a fallback
-    // This will open the user's email client with the order details
-    
-    // Create a hidden link to trigger the email
-    const emailLink = document.createElement('a');
-    emailLink.style.display = 'none';
-    emailLink.href = `mailto:sisterscafe806@gmail.com?subject=New Online Order #${orderData.orderNumber}&body=${encodeURIComponent('New order received. Please check your admin panel.')}`;
-    document.body.appendChild(emailLink);
-    emailLink.click();
-    document.body.removeChild(emailLink);
-    
-    // In a real implementation, you would use a server-side API to send the email
-    // For example:
-    // fetch('/api/send-order', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(orderData)
-    // })
-    // .then(response => response.json())
-    // .then(data => console.log('Order email sent:', data))
-    // .catch(error => console.error('Error sending order:', error));
   }
   
   // Set up order calculator

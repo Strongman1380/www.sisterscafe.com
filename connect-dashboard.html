@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Connect Dashboard - Sisters Cafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Connect-specific styles */
+        .connect-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .connect-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .connect-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .connect-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .account-card {
+            background: var(--light-bg);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .account-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .account-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .status-complete {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-incomplete {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: var(--white);
+            text-decoration: none;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            margin: 0.25rem;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+        }
+
+        .btn-secondary:hover {
+            background: var(--text-color);
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .product-card {
+            background: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0.5rem 0;
+        }
+
+        .merchant-name {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="connect-container">
+        <!-- Header -->
+        <div class="connect-header">
+            <h1>🏪 Stripe Connect Dashboard</h1>
+            <p>Manage connected accounts, products, and marketplace transactions</p>
+        </div>
+
+        <!-- Alerts -->
+        <div id="alerts"></div>
+
+        <!-- Connected Accounts Section -->
+        <div class="connect-section">
+            <h2>Connected Accounts</h2>
+            <p>Create and manage merchant accounts on your platform</p>
+
+            <!-- Create Account Form -->
+            <div class="connect-grid">
+                <div>
+                    <h3>Create New Account</h3>
+                    <form id="create-account-form">
+                        <div class="form-group">
+                            <label for="business-name">Business Name *</label>
+                            <input type="text" id="business-name" name="business_name" required 
+                                   placeholder="e.g., Joe's Pizza">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required 
+                                   placeholder="merchant@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country</label>
+                            <select id="country" name="country">
+                                <option value="US">United States</option>
+                                <option value="CA">Canada</option>
+                                <option value="GB">United Kingdom</option>
+                                <option value="AU">Australia</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">
+                            <span class="btn-text">Create Account</span>
+                            <span class="loading hidden"></span>
+                        </button>
+                    </form>
+                </div>
+
+                <div>
+                    <h3>Account Lookup</h3>
+                    <form id="lookup-account-form">
+                        <div class="form-group">
+                            <label for="account-id">Account ID</label>
+                            <input type="text" id="account-id" name="account_id" 
+                                   placeholder="acct_1234567890">
+                        </div>
+                        <button type="submit" class="btn btn-secondary">
+                            <span class="btn-text">Lookup Account</span>
+                            <span class="loading hidden"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Accounts List -->
+            <div id="accounts-list">
+                <h3>Recent Accounts</h3>
+                <div id="accounts-container">
+                    <p class="text-muted">No accounts created yet. Create your first account above!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="connect-section">
+            <h2>Products</h2>
+            <p>Create products for your connected merchants</p>
+
+            <!-- Create Product Form -->
+            <div class="connect-grid">
+                <div>
+                    <h3>Create New Product</h3>
+                    <form id="create-product-form">
+                        <div class="form-group">
+                            <label for="product-name">Product Name *</label>
+                            <input type="text" id="product-name" name="name" required 
+                                   placeholder="e.g., Margherita Pizza">
+                        </div>
+                        <div class="form-group">
+                            <label for="product-description">Description</label>
+                            <textarea id="product-description" name="description" rows="3"
+                                      placeholder="Delicious pizza with fresh mozzarella and basil"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">Price (in cents) *</label>
+                            <input type="number" id="product-price" name="price_in_cents" required 
+                                   placeholder="1500" min="50">
+                            <small>Enter price in cents (e.g., 1500 = $15.00)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-account">Connected Account *</label>
+                            <select id="product-account" name="connected_account_id" required>
+                                <option value="">Select an account...</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn">
+                            <span class="btn-text">Create Product</span>
+                            <span class="loading hidden"></span>
+                        </button>
+                    </form>
+                </div>
+
+                <div>
+                    <h3>Product Management</h3>
+                    <p>Products are created at the platform level and associated with connected accounts.</p>
+                    <button id="refresh-products" class="btn btn-secondary">Refresh Products</button>
+                    <button id="view-storefront" class="btn btn-success">View Storefront</button>
+                </div>
+            </div>
+
+            <!-- Products List -->
+            <div id="products-list">
+                <h3>All Products</h3>
+                <div id="products-container">
+                    <p class="text-muted">No products created yet. Create your first product above!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="connect-section">
+            <h2>Quick Actions</h2>
+            <div class="connect-grid">
+                <div>
+                    <h3>🛍️ Customer Experience</h3>
+                    <p>Test the customer-facing storefront</p>
+                    <a href="connect-storefront.html" class="btn btn-success">View Storefront</a>
+                </div>
+                <div>
+                    <h3>📊 Documentation</h3>
+                    <p>Learn more about Stripe Connect</p>
+                    <a href="https://stripe.com/docs/connect" target="_blank" class="btn btn-secondary">
+                        Stripe Connect Docs
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+        
+        // Store created accounts and products
+        let accounts = [];
+        let products = [];
+
+        // DOM elements
+        const createAccountForm = document.getElementById('create-account-form');
+        const lookupAccountForm = document.getElementById('lookup-account-form');
+        const createProductForm = document.getElementById('create-product-form');
+        const accountsContainer = document.getElementById('accounts-container');
+        const productsContainer = document.getElementById('products-container');
+        const productAccountSelect = document.getElementById('product-account');
+        const alertsContainer = document.getElementById('alerts');
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Connect Dashboard initialized');
+            
+            // Set up event listeners
+            createAccountForm.addEventListener('submit', handleCreateAccount);
+            lookupAccountForm.addEventListener('submit', handleLookupAccount);
+            createProductForm.addEventListener('submit', handleCreateProduct);
+            
+            document.getElementById('refresh-products').addEventListener('click', loadProducts);
+            document.getElementById('view-storefront').addEventListener('click', () => {
+                window.open('connect-storefront.html', '_blank');
+            });
+
+            // Load initial data
+            loadProducts();
+        });
+
+        // Show alert message
+        function showAlert(message, type = 'info') {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertsContainer.appendChild(alert);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 5000);
+        }
+
+        // Show loading state for button
+        function setButtonLoading(button, loading) {
+            const text = button.querySelector('.btn-text');
+            const spinner = button.querySelector('.loading');
+            
+            if (loading) {
+                text.style.display = 'none';
+                spinner.classList.remove('hidden');
+                button.disabled = true;
+            } else {
+                text.style.display = 'inline';
+                spinner.classList.add('hidden');
+                button.disabled = false;
+            }
+        }
+
+        // Handle create account form submission
+        async function handleCreateAccount(e) {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            setButtonLoading(submitBtn, true);
+
+            try {
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+
+                console.log('Creating account:', data);
+
+                const response = await fetch(`${API_BASE}/api/connect/accounts`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(`✅ Account created successfully: ${result.account.id}`, 'success');
+                    accounts.push(result.account);
+                    updateAccountsDisplay();
+                    updateProductAccountSelect();
+                    e.target.reset();
+                } else {
+                    showAlert(`❌ Failed to create account: ${result.message}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error creating account:', error);
+                showAlert(`❌ Error creating account: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(submitBtn, false);
+            }
+        }
+
+        // Handle lookup account form submission
+        async function handleLookupAccount(e) {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            setButtonLoading(submitBtn, true);
+
+            try {
+                const formData = new FormData(e.target);
+                const accountId = formData.get('account_id');
+
+                if (!accountId) {
+                    showAlert('Please enter an account ID', 'error');
+                    return;
+                }
+
+                console.log('Looking up account:', accountId);
+
+                const response = await fetch(`${API_BASE}/api/connect/accounts?account_id=${accountId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(`✅ Account found: ${result.account.business_name || result.account.email}`, 'success');
+                    
+                    // Add to accounts list if not already there
+                    const existingIndex = accounts.findIndex(acc => acc.id === result.account.id);
+                    if (existingIndex >= 0) {
+                        accounts[existingIndex] = result.account;
+                    } else {
+                        accounts.push(result.account);
+                    }
+                    
+                    updateAccountsDisplay();
+                    updateProductAccountSelect();
+                } else {
+                    showAlert(`❌ Account lookup failed: ${result.message}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error looking up account:', error);
+                showAlert(`❌ Error looking up account: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(submitBtn, false);
+            }
+        }
+
+        // Handle create product form submission
+        async function handleCreateProduct(e) {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            setButtonLoading(submitBtn, true);
+
+            try {
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+                data.price_in_cents = parseInt(data.price_in_cents);
+
+                console.log('Creating product:', data);
+
+                const response = await fetch(`${API_BASE}/api/connect/products`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(`✅ Product created successfully: ${result.product.name}`, 'success');
+                    products.push(result.product);
+                    updateProductsDisplay();
+                    e.target.reset();
+                } else {
+                    showAlert(`❌ Failed to create product: ${result.message}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error creating product:', error);
+                showAlert(`❌ Error creating product: ${error.message}`, 'error');
+            } finally {
+                setButtonLoading(submitBtn, false);
+            }
+        }
+
+        // Load products from API
+        async function loadProducts() {
+            try {
+                console.log('Loading products...');
+
+                const response = await fetch(`${API_BASE}/api/connect/products`);
+                const result = await response.json();
+
+                if (result.success) {
+                    products = result.products;
+                    updateProductsDisplay();
+                    console.log(`Loaded ${products.length} products`);
+                } else {
+                    console.error('Failed to load products:', result.message);
+                }
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Update accounts display
+        function updateAccountsDisplay() {
+            if (accounts.length === 0) {
+                accountsContainer.innerHTML = '<p class="text-muted">No accounts created yet. Create your first account above!</p>';
+                return;
+            }
+
+            const accountsHtml = accounts.map(account => {
+                const statusClass = account.onboarding_complete ? 'status-complete' : 
+                                   account.details_submitted ? 'status-pending' : 'status-incomplete';
+                const statusText = account.onboarding_complete ? 'Complete' : 
+                                  account.details_submitted ? 'Pending' : 'Incomplete';
+
+                return `
+                    <div class="account-card">
+                        <div class="account-status ${statusClass}">${statusText}</div>
+                        <h4>${account.business_name || account.email}</h4>
+                        <p><strong>Account ID:</strong> ${account.id}</p>
+                        <p><strong>Email:</strong> ${account.email}</p>
+                        <p><strong>Charges Enabled:</strong> ${account.charges_enabled ? '✅' : '❌'}</p>
+                        <p><strong>Payouts Enabled:</strong> ${account.payouts_enabled ? '✅' : '❌'}</p>
+                        ${account.needs_onboarding ? `
+                            <button class="btn" onclick="startOnboarding('${account.id}')">
+                                Complete Onboarding
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-secondary" onclick="refreshAccount('${account.id}')">
+                            Refresh Status
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            accountsContainer.innerHTML = accountsHtml;
+        }
+
+        // Update products display
+        function updateProductsDisplay() {
+            if (products.length === 0) {
+                productsContainer.innerHTML = '<p class="text-muted">No products created yet. Create your first product above!</p>';
+                return;
+            }
+
+            const productsHtml = `
+                <div class="product-grid">
+                    ${products.map(product => `
+                        <div class="product-card">
+                            <h4>${product.name}</h4>
+                            <div class="merchant-name">by ${product.merchant_name}</div>
+                            <div class="product-price">$${(product.price_in_cents / 100).toFixed(2)}</div>
+                            <p>${product.description || 'No description'}</p>
+                            <small>Product ID: ${product.id}</small>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            productsContainer.innerHTML = productsHtml;
+        }
+
+        // Update product account select dropdown
+        function updateProductAccountSelect() {
+            const readyAccounts = accounts.filter(acc => acc.charges_enabled);
+            
+            productAccountSelect.innerHTML = '<option value="">Select an account...</option>';
+            
+            readyAccounts.forEach(account => {
+                const option = document.createElement('option');
+                option.value = account.id;
+                option.textContent = `${account.business_name || account.email} (${account.id})`;
+                productAccountSelect.appendChild(option);
+            });
+
+            if (readyAccounts.length === 0 && accounts.length > 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No accounts ready for products (complete onboarding first)';
+                option.disabled = true;
+                productAccountSelect.appendChild(option);
+            }
+        }
+
+        // Start onboarding process
+        async function startOnboarding(accountId) {
+            try {
+                console.log('Starting onboarding for:', accountId);
+
+                const response = await fetch(`${API_BASE}/api/connect/account-links`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        account_id: accountId,
+                        return_url: `${window.location.origin}/connect/onboarding-complete?account_id=${accountId}`,
+                        refresh_url: `${window.location.origin}/connect-dashboard.html?refresh=${accountId}`
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('🔗 Redirecting to onboarding...', 'info');
+                    // Redirect to Stripe onboarding
+                    window.open(result.account_link.url, '_blank');
+                } else {
+                    showAlert(`❌ Failed to start onboarding: ${result.message}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error starting onboarding:', error);
+                showAlert(`❌ Error starting onboarding: ${error.message}`, 'error');
+            }
+        }
+
+        // Refresh account status
+        async function refreshAccount(accountId) {
+            try {
+                console.log('Refreshing account:', accountId);
+
+                const response = await fetch(`${API_BASE}/api/connect/accounts?account_id=${accountId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update account in list
+                    const index = accounts.findIndex(acc => acc.id === accountId);
+                    if (index >= 0) {
+                        accounts[index] = result.account;
+                        updateAccountsDisplay();
+                        updateProductAccountSelect();
+                        showAlert(`✅ Account status refreshed`, 'success');
+                    }
+                } else {
+                    showAlert(`❌ Failed to refresh account: ${result.message}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error refreshing account:', error);
+                showAlert(`❌ Error refreshing account: ${error.message}`, 'error');
+            }
+        }
+
+        // Handle URL parameters (e.g., refresh after onboarding)
+        const urlParams = new URLSearchParams(window.location.search);
+        const refreshAccountId = urlParams.get('refresh');
+        if (refreshAccountId) {
+            // Auto-refresh account after onboarding redirect
+            setTimeout(() => refreshAccount(refreshAccountId), 1000);
+        }
+    </script>
+</body>
+</html>
