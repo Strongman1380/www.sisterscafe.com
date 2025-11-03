@@ -4,13 +4,25 @@ This guide will walk you through setting up email notifications for online order
 
 ## 📧 What This Does
 
-When a customer submits an order through the website, an email will be automatically sent to **sisterscafe28@gmail.com** with:
-- Customer's contact information
+When a customer submits an order through the website, **TWO emails** are automatically sent:
+
+### Email #1: Order Notification to Sisters Cafe
+Sent to **sisterscafe28@gmail.com** with:
+- Customer's contact information (name, phone, email)
 - Complete order details (items, quantities, prices)
 - Pickup time
 - Special instructions
 - Order total with tax
 - Professional invoice-style formatting
+
+### Email #2: Order Confirmation to Customer
+Sent to the **customer's email address** with:
+- Order confirmation and thank you message
+- Order number and pickup time
+- Complete order summary (items, prices, total)
+- Pickup location and phone number
+- Payment reminder (pay at pickup)
+- Beautiful invoice-style formatting
 
 ---
 
@@ -31,7 +43,9 @@ When a customer submits an order through the website, an email will be automatic
 5. Allow EmailJS to send emails on your behalf
 6. Note down the **Service ID** (example: `service_abc123`)
 
-### Step 3: Create Email Template
+### Step 3: Create Email Templates (You need TWO templates)
+
+#### Template #1: Order Notification to Sisters Cafe
 
 1. In EmailJS dashboard, click **"Email Templates"**
 2. Click **"Create New Template"**
@@ -47,7 +61,24 @@ When a customer submits an order through the website, an email will be automatic
    - Paste into EmailJS Content field
    - Click **"Save"**
 
-5. Note down the **Template ID** (example: `template_xyz789`)
+5. **Copy the Template ID** (example: `template_u05esja`) - You'll need this!
+
+#### Template #2: Invoice/Confirmation to Customer
+
+1. Click **"Create New Template"** again
+2. Template Settings:
+   - **Template Name**: `Sisters Cafe Customer Invoice`
+   - **Subject**: `✅ Order Confirmed #{{order_number}} - Sisters Cafe`
+   - **To Email**: `{{customer_email}}` (this will send to the customer)
+
+3. **Content Tab**:
+   - Switch to **HTML** mode (toggle button)
+   - Open the file `CUSTOMER_INVOICE_TEMPLATE.html` in this folder
+   - Copy the ENTIRE contents
+   - Paste into EmailJS Content field
+   - Click **"Save"**
+
+4. **Copy the Template ID** (example: `template_9uaylhv`) - You'll need this too!
 
 ### Step 4: Get Your Public Key
 
@@ -56,35 +87,23 @@ When a customer submits an order through the website, an email will be automatic
 3. Find **"Public Key"** (example: `AbCdEf123456789`)
 4. Copy this key
 
-### Step 5: Update Website Code
+### Step 5: Verify Website Configuration
 
-Open `menu.html` and find line ~374:
+✅ **Good news!** The code is already configured with your credentials:
 
-**BEFORE:**
+**In `menu.html` (line ~376):**
 ```javascript
-emailjs.init('YOUR_PUBLIC_KEY'); // Replace with your EmailJS public key
+emailjs.init('GrZesY7oeZxe3C2TS'); // ✅ Your public key is already set!
 ```
 
-**AFTER:**
+**In `menu-script.js` (lines ~664-666):**
 ```javascript
-emailjs.init('AbCdEf123456789'); // Your actual public key
+const SERVICE_ID = 'service_4x3qqp1';              // ✅ Your service ID
+const CAFE_TEMPLATE_ID = 'template_u05esja';       // ✅ Email to Sisters Cafe
+const CUSTOMER_TEMPLATE_ID = 'template_9uaylhv';   // ✅ Invoice to customer
 ```
 
----
-
-Open `menu-script.js` and find line ~666:
-
-**BEFORE:**
-```javascript
-const SERVICE_ID = 'YOUR_SERVICE_ID';
-const TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-```
-
-**AFTER:**
-```javascript
-const SERVICE_ID = 'service_abc123';  // Your actual service ID
-const TEMPLATE_ID = 'template_xyz789'; // Your actual template ID
-```
+**The system is ready to go!** Both templates will be triggered automatically when customers place orders.
 
 ### Step 6: Test It!
 
@@ -92,9 +111,13 @@ const TEMPLATE_ID = 'template_xyz789'; // Your actual template ID
 2. Refresh the website (hard refresh: `Ctrl + Shift + R` or `Cmd + Shift + R`)
 3. Add items to cart
 4. Go to checkout
-5. Fill in the form with test data
+5. Fill in the form with **your own email address** for testing
 6. Click "Submit Order"
-7. Check **sisterscafe28@gmail.com** inbox - you should receive a beautiful order email!
+7. **Check TWO inboxes:**
+   - ✅ **sisterscafe28@gmail.com** - You should receive the order notification
+   - ✅ **Your test email** - You should receive the customer invoice/confirmation
+
+**Both emails should arrive within seconds!**
 
 ---
 

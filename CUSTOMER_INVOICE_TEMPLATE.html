@@ -1,0 +1,194 @@
+<!--
+  SISTERS CAFE - Customer Invoice/Confirmation Template
+
+  SETUP INSTRUCTIONS:
+  This is the CUSTOMER-FACING invoice email that customers receive after placing an order.
+
+  Template ID: template_9uaylhv
+
+  This template uses the same variables as the cafe notification template:
+  - {{to_email}} - Will be the customer's email address
+  - {{customer_name}} - Customer's name
+  - {{customer_phone}} - Customer's phone number
+  - {{customer_email}} - Customer's email address
+  - {{order_number}} - Generated order number (e.g., SC12345678)
+  - {{order_items_html}} - HTML formatted list of order items
+  - {{subtotal}} - Order subtotal
+  - {{tax}} - Tax amount
+  - {{total}} - Total amount
+  - {{pickup_time}} - When customer wants to pick up
+  - {{order_notes}} - Special instructions
+  - {{order_date}} - Date/time order was placed
+
+  IMPORTANT: This template should be configured in EmailJS to send TO the customer
+  (using {{customer_email}} or the to_email field will automatically be the customer's email)
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation - Sisters Cafe</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Georgia', 'Times New Roman', serif; background-color: #F9F5F0;">
+
+  <!-- Email Container -->
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #F9F5F0; padding: 20px 0;">
+    <tr>
+      <td align="center">
+
+        <!-- Main Content Card -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px; background-color: #FFFFFF; border-radius: 12px; box-shadow: 0 4px 12px rgba(139, 111, 71, 0.15); overflow: hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #8B6F47 0%, #D4A574 100%); padding: 30px 40px; text-align: center;">
+              <h1 style="margin: 0; color: #FFFFFF; font-family: 'Dancing Script', cursive, Georgia, serif; font-size: 42px; font-weight: 400; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                Sisters Cafe
+              </h1>
+              <p style="margin: 10px 0 0 0; color: #FFF8F0; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;">
+                ~ Order Confirmation ~
+              </p>
+            </td>
+          </tr>
+
+          <!-- Success Banner -->
+          <tr>
+            <td style="background-color: #8FA785; padding: 20px 40px; text-align: center;">
+              <div style="font-size: 48px; margin-bottom: 10px;">✅</div>
+              <p style="margin: 0; color: #FFFFFF; font-size: 20px; font-weight: bold;">
+                Thank you, {{customer_name}}!
+              </p>
+              <p style="margin: 5px 0 0 0; color: #FFF8F0; font-size: 14px;">
+                Your order has been received and we're getting it ready!
+              </p>
+            </td>
+          </tr>
+
+          <!-- Order Number Banner -->
+          <tr>
+            <td style="background-color: #C17C74; padding: 15px 40px; text-align: center;">
+              <p style="margin: 0; color: #FFFFFF; font-size: 18px; font-weight: bold;">
+                Order #{{order_number}}
+              </p>
+              <p style="margin: 5px 0 0 0; color: #FFF8F0; font-size: 13px;">
+                Placed on {{order_date}}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body Content -->
+          <tr>
+            <td style="padding: 40px;">
+
+              <!-- Pickup Information -->
+              <div style="background-color: #FFF8F0; border-left: 4px solid #D4A574; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <h2 style="margin: 0 0 15px 0; color: #8B6F47; font-size: 20px;">
+                  🕐 Pickup Information
+                </h2>
+                <p style="margin: 8px 0; color: #6B5D56; font-size: 15px;">
+                  <strong>When:</strong> <span style="background-color: #8FA785; color: white; padding: 4px 12px; border-radius: 4px; font-weight: bold;">{{pickup_time}}</span>
+                </p>
+                <p style="margin: 8px 0; color: #6B5D56; font-size: 15px;">
+                  <strong>Where:</strong> Sisters Cafe
+                </p>
+                <p style="margin: 8px 0; color: #6B5D56; font-size: 15px;">
+                  <strong>Phone:</strong> <a href="tel:402-759-4144" style="color: #8B6F47; text-decoration: none;">402-759-4144</a>
+                </p>
+              </div>
+
+              <!-- Order Items -->
+              <h2 style="margin: 0 0 15px 0; color: #8B6F47; font-size: 20px; border-bottom: 2px solid #E8DDD3; padding-bottom: 10px;">
+                🍽️ Your Order
+              </h2>
+              <ul style="margin: 0 0 25px 0; padding: 0; list-style: none;">
+                {{{order_items_html}}}
+              </ul>
+
+              <!-- Order Totals -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 25px; background-color: #FFF8F0; padding: 20px; border-radius: 8px;">
+                <tr>
+                  <td style="padding: 8px 0; text-align: right; color: #6B5D56; font-size: 15px;">
+                    <strong>Subtotal:</strong>
+                  </td>
+                  <td style="padding: 8px 0 8px 20px; text-align: right; color: #6B5D56; font-size: 15px; width: 100px;">
+                    ${{subtotal}}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; text-align: right; color: #6B5D56; font-size: 15px;">
+                    <strong>Tax (7.5%):</strong>
+                  </td>
+                  <td style="padding: 8px 0 8px 20px; text-align: right; color: #6B5D56; font-size: 15px;">
+                    ${{tax}}
+                  </td>
+                </tr>
+                <tr style="border-top: 2px solid #8B6F47;">
+                  <td style="padding: 12px 0; text-align: right; color: #8B6F47; font-size: 20px;">
+                    <strong>TOTAL:</strong>
+                  </td>
+                  <td style="padding: 12px 0 12px 20px; text-align: right; color: #8B6F47; font-size: 20px; font-weight: bold;">
+                    ${{total}}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Special Instructions (if any) -->
+              <div style="background-color: #FFF8F0; padding: 15px; border-radius: 8px; border-left: 4px solid #C17C74; margin-bottom: 25px;">
+                <p style="margin: 0; color: #6B5D56; font-size: 14px;">
+                  <strong>💬 Your Notes:</strong><br>
+                  {{order_notes}}
+                </p>
+              </div>
+
+              <!-- Payment Reminder -->
+              <div style="background-color: #8FA785; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 25px;">
+                <p style="margin: 0 0 8px 0; color: #FFFFFF; font-size: 16px; font-weight: bold;">
+                  💰 Payment at Pickup
+                </p>
+                <p style="margin: 0; color: #FFF8F0; font-size: 14px;">
+                  Please pay with cash or card when you pick up your order
+                </p>
+              </div>
+
+              <!-- Important Note -->
+              <div style="background-color: #FFF8F0; padding: 15px; border-radius: 8px; border: 1px solid #E8DDD3;">
+                <p style="margin: 0 0 10px 0; color: #8B6F47; font-size: 14px; font-weight: bold;">
+                  📌 Important:
+                </p>
+                <p style="margin: 0; color: #6B5D56; font-size: 13px; line-height: 1.6;">
+                  If you need to make any changes to your order or have questions, please call us at
+                  <a href="tel:402-759-4144" style="color: #8B6F47; text-decoration: none; font-weight: bold;">402-759-4144</a>
+                  as soon as possible.
+                </p>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #F9F5F0; padding: 30px 40px; text-align: center; border-top: 3px solid #D4A574;">
+              <p style="margin: 0 0 10px 0; color: #8B6F47; font-size: 16px; font-weight: bold;">
+                We can't wait to see you!
+              </p>
+              <p style="margin: 0 0 15px 0; color: #6B5D56; font-size: 14px;">
+                <strong>Sisters Cafe</strong><br>
+                📍 402-759-4144<br>
+                Open Monday-Saturday: 6AM–2PM
+              </p>
+              <p style="margin: 0; color: #8B6F47; font-size: 12px; font-style: italic;">
+                ~ Made with love in our small-town cafe ~
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

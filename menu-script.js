@@ -660,22 +660,33 @@ document.addEventListener('DOMContentLoaded', function() {
           order_date: new Date().toLocaleString()
         };
 
-        // Send email using EmailJS
+        // Send TWO emails using EmailJS
         const SERVICE_ID = 'service_4x3qqp1';
-        const TEMPLATE_ID = 'template_u05esja';
+        const CAFE_TEMPLATE_ID = 'template_u05esja';      // Email to Sisters Cafe
+        const CUSTOMER_TEMPLATE_ID = 'template_9uaylhv';  // Invoice to customer
 
         console.log('🔧 EmailJS Configuration:', {
           emailjsLoaded: typeof emailjs !== 'undefined',
           serviceId: SERVICE_ID,
-          templateId: TEMPLATE_ID
+          cafeTemplateId: CAFE_TEMPLATE_ID,
+          customerTemplateId: CUSTOMER_TEMPLATE_ID
         });
 
-        if (typeof emailjs !== 'undefined' && SERVICE_ID !== 'YOUR_SERVICE_ID' && TEMPLATE_ID !== 'YOUR_TEMPLATE_ID') {
+        if (typeof emailjs !== 'undefined' && SERVICE_ID !== 'YOUR_SERVICE_ID') {
           try {
-            console.log('📤 Attempting to send email with params:', emailParams);
-            const response = await emailjs.send(SERVICE_ID, TEMPLATE_ID, emailParams);
-            console.log('✅ Order email sent successfully to sisterscafe28@gmail.com!');
-            console.log('📧 EmailJS Response:', response);
+            console.log('📤 Sending emails...');
+
+            // Email 1: Send order notification to Sisters Cafe
+            console.log('📧 Sending order notification to Sisters Cafe...');
+            const cafeResponse = await emailjs.send(SERVICE_ID, CAFE_TEMPLATE_ID, emailParams);
+            console.log('✅ Order notification sent to sisterscafe28@gmail.com!');
+
+            // Email 2: Send invoice/confirmation to customer
+            console.log('📧 Sending invoice to customer at ' + customerEmail + '...');
+            const customerResponse = await emailjs.send(SERVICE_ID, CUSTOMER_TEMPLATE_ID, emailParams);
+            console.log('✅ Invoice sent to customer at ' + customerEmail + '!');
+
+            console.log('🎉 Both emails sent successfully!');
           } catch (emailError) {
             console.error('❌ Email sending failed:', emailError);
             console.error('Error details:', {
