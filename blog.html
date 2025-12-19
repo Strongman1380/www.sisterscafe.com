@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="description" content="Read the latest stories, recipes, and community updates from The Café Chronicle - Sisters Cafe's blog on Medium." />
   <meta name="keywords" content="Sisters Cafe blog, The Café Chronicle, Geneva NE stories, cafe recipes, community updates" />
   <title>The Café Chronicle - Sisters Cafe Blog</title>
@@ -121,18 +124,150 @@
             </p>
           </div>
 
-          <!-- Medium Auto-Sync Embed -->
+          <!-- RSS Feed Display -->
           <section id="medium-feed">
-            <script src="https://medium-widget.pixelpoint.io/widget.js"></script>
+            <div id="rss-feed-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 30px;">
+              <!-- Loading state -->
+              <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+                <p style="color: var(--text-light); font-size: 1.1rem;">Loading latest stories from The Café Chronicle...</p>
+              </div>
+            </div>
+
             <script>
-              MediumWidget.Init({
-                resource: "https://medium.com/the-café-chronicle",
-                postsPerLine: 3,
-                limit: 6,
-                picture: "big",
-                fields: ["description", "author", "claps", "likes"],
-                ratio: "landscape"
-              });
+              // RSS Feed Loader v2.0 - Updated Nov 2025
+              console.log('🔄 Blog RSS Feed Script Version 2.0 loaded');
+
+              // Fetch and display RSS feed from Medium
+              async function loadRSSFeed() {
+                try {
+                  const RSS_FEED_URL = "https://medium.com/feed/the-café-chronicle";
+
+                  console.log('📡 Fetching RSS feed from:', RSS_FEED_URL);
+
+                  // Use RSS2JSON API to parse the feed (no API key needed for free tier)
+                  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_FEED_URL)}&count=6`;
+                  console.log('🔗 API URL:', apiUrl);
+
+                  const response = await fetch(apiUrl);
+                  const data = await response.json();
+
+                  console.log('📦 RSS Data received:', data);
+
+                  const container = document.getElementById('rss-feed-container');
+
+                  if (data.status === 'ok' && data.items && data.items.length > 0) {
+                    console.log('✅ Found', data.items.length, 'posts');
+                    container.innerHTML = '';
+
+                    data.items.forEach((item, index) => {
+                      // Extract featured image
+                      const tempDiv = document.createElement('div');
+                      tempDiv.innerHTML = item.description || item.content || '';
+                      const firstImg = tempDiv.querySelector('img');
+                      const imageUrl = firstImg ? firstImg.src : 'https://placehold.co/600x400/8B6F47/FFFFFF?text=The+Café+Chronicle';
+
+                      // Clean description
+                      const cleanDescription = (item.description || '').replace(/<[^>]+>/g, '').substring(0, 180) + '...';
+
+                      // Format date
+                      const pubDate = new Date(item.pubDate);
+                      const formattedDate = pubDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      });
+
+                      // Create article card
+                      const articleCard = `
+                        <article style="background: var(--white); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); border: 3px solid var(--border-color); transition: all 0.3s ease; cursor: pointer; height: 100%; display: flex; flex-direction: column;"
+                          onclick="window.open('${item.link}', '_blank')"
+                          onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(139, 111, 71, 0.2)'"
+                          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'">
+
+                          <!-- Featured Image -->
+                          <div style="height: 220px; overflow: hidden; background: var(--cream); position: relative;">
+                            <img src="${imageUrl}" alt="${item.title}"
+                              style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;"
+                              onmouseover="this.style.transform='scale(1.1)'"
+                              onmouseout="this.style.transform='scale(1)'">
+                            <div style="position: absolute; top: 15px; right: 15px; background: rgba(139, 111, 71, 0.95); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; backdrop-filter: blur(5px);">
+                              <i class="fab fa-medium"></i> Medium
+                            </div>
+                          </div>
+
+                          <!-- Content -->
+                          <div style="padding: 25px; flex-grow: 1; display: flex; flex-direction: column;">
+                            <!-- Meta info -->
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px; color: var(--text-light); font-size: 0.85rem;">
+                              <span style="display: flex; align-items: center; gap: 5px;">
+                                <i class="fas fa-calendar-alt" style="color: var(--accent-color);"></i>
+                                ${formattedDate}
+                              </span>
+                              <span style="display: flex; align-items: center; gap: 5px;">
+                                <i class="fas fa-user" style="color: var(--secondary-color);"></i>
+                                ${item.author || 'Sisters Cafe'}
+                              </span>
+                            </div>
+
+                            <!-- Title -->
+                            <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 1.4rem; line-height: 1.4; font-family: var(--font-heading); flex-grow: 0;">
+                              ${item.title}
+                            </h3>
+
+                            <!-- Description -->
+                            <p style="color: var(--text-light); line-height: 1.7; margin-bottom: 20px; font-size: 0.95rem; flex-grow: 1;">
+                              ${cleanDescription}
+                            </p>
+
+                            <!-- Read more button -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 2px solid var(--border-color);">
+                              <span style="color: var(--accent-color); font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
+                                Read Full Story <i class="fas fa-arrow-right"></i>
+                              </span>
+                              <span style="color: var(--text-light); font-size: 0.8rem;">
+                                <i class="fas fa-clock"></i> ${Math.ceil(cleanDescription.split(' ').length / 200)} min read
+                              </span>
+                            </div>
+                          </div>
+                        </article>
+                      `;
+
+                      container.innerHTML += articleCard;
+                    });
+                  } else {
+                    console.warn('⚠️ Feed response:', data);
+                    console.warn('⚠️ Status:', data.status);
+                    console.warn('⚠️ Items:', data.items);
+                    throw new Error(`Feed issue: ${data.status || 'No posts found'} - ${data.message || 'Invalid feed'}`);
+                  }
+                } catch (error) {
+                  console.error('❌ Error loading RSS feed:', error);
+                  console.error('Error details:', error.message);
+                  const container = document.getElementById('rss-feed-container');
+                  container.innerHTML = `
+                    <div style="grid-column: 1/-1; padding: 50px 30px; text-align: center; background: var(--cream); border-radius: var(--radius-lg); border: 3px dashed var(--border-color);">
+                      <i class="fab fa-medium" style="font-size: 4rem; color: var(--accent-color); margin-bottom: 25px; display: block;"></i>
+                      <h3 style="color: var(--primary-color); margin-bottom: 15px; font-size: 1.8rem;">
+                        Visit us on Medium
+                      </h3>
+                      <p style="color: var(--text-light); margin-bottom: 25px; font-size: 1.1rem; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+                        Our latest stories are waiting for you on The Café Chronicle. Click below to read our newest posts!
+                      </p>
+                      <a href="https://medium.com/the-café-chronicle" target="_blank" class="btn" style="display: inline-flex; align-items: center; gap: 10px; font-size: 1.1rem; padding: 15px 30px;">
+                        <i class="fab fa-medium"></i> Read on Medium
+                      </a>
+                    </div>
+                  `;
+                }
+              }
+
+              // Load feed when page is ready
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadRSSFeed);
+              } else {
+                loadRSSFeed();
+              }
             </script>
           </section>
 
