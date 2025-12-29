@@ -18,27 +18,27 @@
     }
     .success-icon {
       font-size: 4rem;
-      color: #28a745;
+      color: var(--secondary-color);
       margin-bottom: 1rem;
     }
     .success-title {
-      color: #28a745;
+      color: var(--secondary-color);
       font-size: 2rem;
       margin-bottom: 1rem;
     }
     .order-details {
-      background: #f8f9fa;
+      background: var(--cream);
       padding: 1.5rem;
       border-radius: 8px;
       margin: 1.5rem 0;
       text-align: left;
     }
     .next-steps {
-      background: #e7f3ff;
+      background: var(--cream);
       padding: 1.5rem;
       border-radius: 8px;
       margin: 1.5rem 0;
-      border-left: 4px solid #007bff;
+      border-left: 4px solid var(--primary-color);
     }
     .btn-group {
       display: flex;
@@ -78,7 +78,7 @@
         <h3><i class="fas fa-receipt"></i> Order Details</h3>
         <p><strong>Order ID:</strong> <span id="order-id">Loading...</span></p>
         <p><strong>Total Paid:</strong> <span id="order-total">Loading...</span></p>
-        <p><strong>Payment Status:</strong> <span style="color: #28a745;">✅ Paid</span></p>
+        <p><strong>Payment Status:</strong> <span style="color: var(--secondary-color);">✅ Paid</span></p>
       </div>
       
       <div class="next-steps">
@@ -93,22 +93,64 @@
       </div>
       
       <div class="btn-group">
-        <a href="tel:4027594144" class="btn" style="background-color: #28a745; color: white;">
+        <a href="tel:4027594144" class="btn" style="background-color: var(--secondary-color); color: white;">
           <i class="fas fa-phone"></i> Call Restaurant
         </a>
-        <a href="menu.html" class="btn" style="background-color: #007bff; color: white;">
+        <a href="menu.html" class="btn" style="background-color: var(--primary-color); color: white;">
           <i class="fas fa-utensils"></i> Order Again
         </a>
-        <a href="index.html" class="btn" style="background-color: #6c757d; color: white;">
+        <a href="index.html" class="btn" style="background-color: var(--text-light); color: white;">
           <i class="fas fa-home"></i> Back to Home
         </a>
       </div>
       
-      <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; color: #6c757d; font-size: 0.9rem;">
-        <p><i class="fas fa-info-circle"></i> If you have any questions about your order, please call us at <a href="tel:4027594144" style="color: #007bff;">(402) 759-4144</a></p>
+      <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color); color: var(--text-light); font-size: 0.9rem;">
+        <p><i class="fas fa-info-circle"></i> If you have any questions about your order, please call us at <a href="tel:4027594144" style="color: var(--primary-color);">(402) 759-4144</a></p>
       </div>
     </div>
   </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <img src="images/sisters-logo.jpeg" alt="Sisters Cafe Logo" class="footer-logo-img">
+          <p>Homemade Food, Family Vibes, Community Love</p>
+        </div>
+        
+        <div class="footer-links">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="menu.html">Menu</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-contact">
+          <h3>Contact Us</h3>
+          <p><i class="fas fa-map-marker-alt"></i> 310 S 13th St, Geneva, NE 68361</p>
+          <p><i class="fas fa-phone"></i> <a href="tel:4027594144">(402) 759-4144</a></p>
+          <p><i class="fas fa-envelope"></i> <a href="mailto:sisterscafe28@gmail.com">sisterscafe28@gmail.com</a></p>
+        </div>
+        
+        <div class="footer-social">
+          <h3>Follow Us</h3>
+          <div class="social-icons">
+            <a href="https://www.facebook.com/profile.php?id=61573728355131" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-square"></i></a>
+            <a href="https://medium.com/@sisterscafe806" target="_blank" aria-label="Medium Blog"><i class="fab fa-medium"></i></a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 Sisters Cafe. All rights reserved.</p>
+        <p>Made with <i class="fas fa-heart"></i> in Geneva, NE</p>
+      </div>
+    </div>
+  </footer>
 
   <script>
     // Get session ID from URL parameters

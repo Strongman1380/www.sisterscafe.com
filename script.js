@@ -111,7 +111,7 @@ const currentDay = days[today.getDay()];
 const siteConfig = {
   name: "Sisters Cafe",
   phone: "(402) 759-4144",
-  email: "sisterscafe806@gmail.com",
+  email: "sisterscafe28@gmail.com",
   address: "310 S 13th St, Geneva, NE 68361",
   hours: {
     Monday: "6AM–2PM",

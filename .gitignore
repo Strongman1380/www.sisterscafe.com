@@ -31,3 +31,9 @@ logs
 # Temporary files
 *.tmp
 *.bak
+.vercel
+
+# Environment variables (NEVER commit secrets)
+.env
+.env*.local
+.env

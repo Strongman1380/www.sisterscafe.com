@@ -12,6 +12,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://app.aminos.ai/js/chat_plugin.js" data-bot-id="48060"></script>
+  <!-- EmailJS for contact form -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function() {
+      emailjs.init('GrZesY7oeZxe3C2TS');
+    })();
+  </script>
 </head>
 <body>
   <nav class="navbar sticky">
@@ -55,7 +62,7 @@
           <i class="fas fa-envelope"></i>
           <div>
             <strong>Email:</strong>
-            <p><a href="mailto:sisterscafe806@gmail.com" class="contact-link">sisterscafe806@gmail.com</a></p>
+            <p><a href="mailto:sisterscafe28@gmail.com" class="contact-link">sisterscafe28@gmail.com</a></p>
           </div>
         </div>
         <div class="contact-info-item">
@@ -109,7 +116,7 @@
     <div class="menu-section">
       <h2>Catering & Special Events</h2>
       <p>Sisters Cafe offers catering services for your special events. Whether it's a family gathering, business meeting, or community event, we can provide delicious homemade food that will delight your guests.</p>
-      <p>For catering inquiries, please call us at <a href="tel:4027594144">(402) 759-4144</a> or email us at <a href="mailto:sisterscafe806@gmail.com">sisterscafe806@gmail.com</a>.</p>
+      <p>For catering inquiries, please call us at <a href="tel:4027594144">(402) 759-4144</a> or email us at <a href="mailto:sisterscafe28@gmail.com">sisterscafe28@gmail.com</a>.</p>
     </div>
   </div>
 
@@ -136,7 +143,7 @@
           <h3>Contact Us</h3>
           <p><i class="fas fa-map-marker-alt"></i> 310 S 13th St, Geneva, NE 68361</p>
           <p><i class="fas fa-phone"></i> <a href="tel:4027594144">(402) 759-4144</a></p>
-          <p><i class="fas fa-envelope"></i> <a href="mailto:sisterscafe806@gmail.com">sisterscafe806@gmail.com</a></p>
+          <p><i class="fas fa-envelope"></i> <a href="mailto:sisterscafe28@gmail.com">sisterscafe28@gmail.com</a></p>
         </div>
         
         <div class="footer-social">
@@ -160,5 +167,50 @@
   </div>
   
   <script src="script.js"></script>
+  <script>
+    // Contact form handler
+    document.addEventListener('DOMContentLoaded', function() {
+      const contactForm = document.getElementById('contact-form');
+      const formResponse = document.getElementById('form-response');
+
+      if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+
+          const submitBtn = contactForm.querySelector('button[type="submit"]');
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Sending...';
+          submitBtn.disabled = true;
+
+          const templateParams = {
+            from_name: document.getElementById('name').value,
+            from_email: document.getElementById('email').value,
+            from_phone: document.getElementById('phone').value || 'Not provided',
+            message: document.getElementById('message').value,
+            to_email: 'sisterscafe28@gmail.com'
+          };
+
+          try {
+            // EmailJS service and template IDs
+            const SERVICE_ID = 'service_4x3qqp1';
+            const CONTACT_TEMPLATE_ID = 'template_contact'; // Create this template in EmailJS
+
+            await emailjs.send(SERVICE_ID, CONTACT_TEMPLATE_ID, templateParams);
+
+            formResponse.innerHTML = '<p style="color: green; font-weight: bold;">Thank you! Your message has been sent. We\'ll get back to you soon.</p>';
+            formResponse.style.display = 'block';
+            contactForm.reset();
+          } catch (error) {
+            console.error('Contact form error:', error);
+            formResponse.innerHTML = '<p style="color: red;">Sorry, there was an error sending your message. Please call us at (402) 759-4144 instead.</p>';
+            formResponse.style.display = 'block';
+          } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
