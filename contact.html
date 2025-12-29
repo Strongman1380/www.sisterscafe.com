@@ -40,84 +40,136 @@
     </div>
   </nav>
 
-  <div class="hero">
-    <div class="hero-content">
-      <h1 style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">Contact Us</h1>
-      <div class="contact-info-container">
-        <div class="contact-info-item">
-          <i class="fas fa-map-marker-alt"></i>
-          <div>
-            <strong>Location:</strong>
-            <p>310 S 13th St, Geneva, NE 68361</p>
-          </div>
-        </div>
-        <div class="contact-info-item">
-          <i class="fas fa-phone"></i>
-          <div>
-            <strong>Phone:</strong>
-            <p><a href="tel:4027594144" class="contact-link">(402) 759-4144</a></p>
-          </div>
-        </div>
-        <div class="contact-info-item">
-          <i class="fas fa-envelope"></i>
-          <div>
-            <strong>Email:</strong>
-            <p><a href="mailto:sisterscafe28@gmail.com" class="contact-link">sisterscafe28@gmail.com</a></p>
-          </div>
-        </div>
-        <div class="contact-info-item">
-          <i class="fas fa-clock"></i>
-          <div>
-            <strong>Hours:</strong>
-            <p>Open 7 Days a Week: 6AM–2PM</p>
-          </div>
-        </div>
-        <div class="contact-info-item">
-          <i class="fas fa-share-alt"></i>
-          <div>
-            <strong>Follow us:</strong>
-            <p><a href="https://www.facebook.com/profile.php?id=61573728355131" target="_blank" class="social-icon"><i class="fab fa-facebook"></i> Facebook</a></p>
-          </div>
-        </div>
-      </div>
+  <!-- Contact Hero -->
+  <section class="contact-hero">
+    <div class="container">
+      <h1>Get In Touch</h1>
+      <p>We'd love to hear from you! Whether you have a question, feedback, or want to plan a special event, we're here to help.</p>
     </div>
-  </div>
+  </section>
 
   <div class="container">
-    <div class="menu-section">
-      <h2>Send Us a Message</h2>
-      <form id="contact-form">
-        <div style="margin-bottom: 15px;">
-          <label for="name">Your Name:</label>
-          <input type="text" id="name" name="name" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
+    
+    <!-- Contact Cards Grid -->
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="contact-card-icon">
+          <i class="fas fa-map-marker-alt"></i>
         </div>
-        <div style="margin-bottom: 15px;">
-          <label for="email">Your Email:</label>
-          <input type="email" id="email" name="email" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
+        <h3>Visit Us</h3>
+        <p>310 S 13th St</p>
+        <p>Geneva, NE 68361</p>
+        <a href="https://maps.google.com/?q=310+S+13th+St,+Geneva,+NE+68361" target="_blank">
+          <i class="fas fa-directions"></i> Get Directions
+        </a>
+      </div>
+      
+      <div class="contact-card">
+        <div class="contact-card-icon">
+          <i class="fas fa-phone-alt"></i>
         </div>
-        <div style="margin-bottom: 15px;">
-          <label for="phone">Your Phone:</label>
-          <input type="tel" id="phone" name="phone" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;">
+        <h3>Call Us</h3>
+        <p>Ready to place an order or have a question?</p>
+        <a href="tel:4027594144">
+          <i class="fas fa-phone"></i> (402) 759-4144
+        </a>
+      </div>
+      
+      <div class="contact-card">
+        <div class="contact-card-icon">
+          <i class="fas fa-envelope"></i>
         </div>
-        <div style="margin-bottom: 15px;">
-          <label for="message">Your Message:</label>
-          <textarea id="message" name="message" rows="5" required style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+        <h3>Email Us</h3>
+        <p>For inquiries, feedback, or catering requests</p>
+        <a href="mailto:sisterscafe28@gmail.com">
+          <i class="fas fa-paper-plane"></i> sisterscafe28@gmail.com
+        </a>
+      </div>
+      
+      <div class="contact-card">
+        <div class="contact-card-icon">
+          <i class="fas fa-clock"></i>
         </div>
-        <button type="submit" class="btn">Send Message</button>
+        <h3>Hours</h3>
+        <p>Open 7 Days a Week</p>
+        <p style="font-size: 1.3rem; color: var(--primary-color); font-weight: 600;">6:00 AM – 2:00 PM</p>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form-section">
+      <h2><i class="fas fa-paper-plane"></i> Send Us a Message</h2>
+      <p class="subtitle">Have a question or special request? Fill out the form below and we'll get back to you as soon as possible.</p>
+      
+      <form id="contact-form" class="contact-form">
+        <div class="form-group">
+          <label for="name"><i class="fas fa-user"></i> Your Name</label>
+          <input type="text" id="name" name="name" placeholder="John Doe" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+          <input type="email" id="email" name="email" placeholder="john@example.com" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="phone"><i class="fas fa-phone"></i> Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="(402) 555-1234">
+        </div>
+        
+        <div class="form-group">
+          <label for="subject"><i class="fas fa-tag"></i> Subject</label>
+          <input type="text" id="subject" name="subject" placeholder="How can we help?">
+        </div>
+        
+        <div class="form-group full-width">
+          <label for="message"><i class="fas fa-comment-alt"></i> Your Message</label>
+          <textarea id="message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+        </div>
+        
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-paper-plane"></i> Send Message
+        </button>
       </form>
-      <div id="form-response" style="margin-top: 20px; display: none;"></div>
+      <div id="form-response" style="margin-top: 20px; display: none; text-align: center;"></div>
     </div>
 
-    <div class="menu-section">
-      <h2>Find Us</h2>
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3026.0!2d-97.6!3d40.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDMwJzAwLjAiTiA5N8KwMzYnMDAuMCJX!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" width="100%" height="400" style="border:0; border-radius: 8px;" allowfullscreen="" loading="lazy"></iframe>
+    <!-- Map Section -->
+    <div class="map-section">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3026.0!2d-97.6!3d40.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDMwJzAwLjAiTiA5N8KwMzYnMDAuMCJX!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus" allowfullscreen="" loading="lazy" title="Sisters Cafe Location"></iframe>
     </div>
 
-    <div class="menu-section">
-      <h2>Catering & Special Events</h2>
+    <!-- Catering Section -->
+    <div class="catering-section">
+      <h2><i class="fas fa-utensils"></i> Catering & Special Events</h2>
       <p>Sisters Cafe offers catering services for your special events. Whether it's a family gathering, business meeting, or community event, we can provide delicious homemade food that will delight your guests.</p>
-      <p>For catering inquiries, please call us at <a href="tel:4027594144">(402) 759-4144</a> or email us at <a href="mailto:sisterscafe28@gmail.com">sisterscafe28@gmail.com</a>.</p>
+      <div class="catering-buttons">
+        <a href="tel:4027594144" class="btn btn-primary">
+          <i class="fas fa-phone"></i> Call for Catering
+        </a>
+        <a href="mailto:sisterscafe28@gmail.com" class="btn btn-outline">
+          <i class="fas fa-envelope"></i> Email Us
+        </a>
+      </div>
     </div>
+
+    <!-- Social Links -->
+    <div class="contact-card" style="text-align: center; margin-bottom: 3rem;">
+      <div class="contact-card-icon" style="margin: 0 auto 1.5rem;">
+        <i class="fas fa-share-alt"></i>
+      </div>
+      <h3>Follow Us</h3>
+      <p>Stay connected and see what's happening at Sisters Cafe!</p>
+      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+        <a href="https://www.facebook.com/profile.php?id=61573728355131" target="_blank" class="btn btn-outline" style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fab fa-facebook"></i> Facebook
+        </a>
+        <a href="https://medium.com/@sisterscafe806" target="_blank" class="btn btn-outline" style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fab fa-medium"></i> Blog
+        </a>
+      </div>
+    </div>
+
   </div>
 
   <footer class="footer">
