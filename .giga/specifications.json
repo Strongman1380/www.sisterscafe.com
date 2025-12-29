@@ -1,0 +1,22 @@
+[
+  {
+    "fileName": "main-overview.mdc",
+    "description": "Complete system overview covering the restaurant marketplace platform architecture, component relationships, and key business workflows"
+  },
+  {
+    "fileName": "payment-processing-flow.mdc",
+    "description": "Detailed documentation of the payment processing system, including Stripe Connect integration, fee calculations, and multi-party payment distribution algorithms"
+  },
+  {
+    "fileName": "order-management-model.mdc",
+    "description": "Comprehensive documentation of the order processing pipeline, status management, and notification system architecture including data models and state transitions"
+  },
+  {
+    "fileName": "restaurant-integration-model.mdc",
+    "description": "Documentation of restaurant onboarding, account management, and restaurant-specific payment flows including data models and business validation rules"
+  },
+  {
+    "fileName": "notification-system-architecture.mdc",
+    "description": "Detailed documentation of the multi-channel notification system, including email and SMS integration, templating system, and notification routing logic"
+  }
+]
