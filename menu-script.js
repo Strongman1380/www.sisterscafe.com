@@ -652,12 +652,22 @@ document.addEventListener('DOMContentLoaded', function() {
           pickup_time: formattedPickupTime,
           order_notes: orderNotes || 'None',
           order_number: orderNumber,
+          invoice_number: 'INV-' + orderNumber,
           order_items_html: orderItemsHTML,
           order_items_text: orderItemsText,
           subtotal: subtotal.toFixed(2),
           tax: tax.toFixed(2),
+          tax_label: 'Tax (7.5%)',
           total: total.toFixed(2),
-          order_date: new Date().toLocaleString()
+          order_date: new Date().toLocaleString(),
+          // Additional fields for customer invoice
+          delivery_address: 'Pickup at Sisters Cafe',
+          payment_status: 'Pay at Pickup',
+          fees_label: 'Fees',
+          fees: '0.00',
+          tip: '0.00',
+          discount_label: 'Discount',
+          discount: '0.00'
         };
 
         // Send TWO emails using EmailJS
@@ -683,7 +693,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Email 2: Send invoice/confirmation to customer
             console.log('📧 Sending invoice to customer at ' + customerEmail + '...');
-            const customerResponse = await emailjs.send(SERVICE_ID, CUSTOMER_TEMPLATE_ID, emailParams);
+            const customerParams = { ...emailParams, to_email: customerEmail };
+            const customerResponse = await emailjs.send(SERVICE_ID, CUSTOMER_TEMPLATE_ID, customerParams);
             console.log('✅ Invoice sent to customer at ' + customerEmail + '!');
 
             console.log('🎉 Both emails sent successfully!');

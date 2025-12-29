@@ -120,7 +120,7 @@ const siteConfig = {
     Thursday: "6AM–2PM",
     Friday: "6AM–2PM",
     Saturday: "6AM–2PM",
-    Sunday: "Closed"
+    Sunday: "6AM–2PM"
   },
   socialMedia: {
     facebook: "https://www.facebook.com/profile.php?id=61573728355131",
