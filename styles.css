@@ -406,14 +406,16 @@ a:hover {
 }
 
 .btn-outline {
-  background-color: transparent;
+  background-color: var(--white);
   border: 2px solid var(--primary-color);
   color: var(--primary-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-outline:hover {
   background-color: var(--primary-color);
   color: var(--white);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-sm {
@@ -1045,24 +1047,28 @@ a:hover {
   color: var(--primary-color);
   border: 2px solid var(--white);
   font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .cta-buttons .btn-primary:hover {
-  background-color: transparent;
-  color: var(--white);
-  border: 2px solid var(--white);
+  background-color: var(--cream);
+  color: var(--primary-dark);
+  border: 2px solid var(--cream);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 .cta-buttons .btn-secondary {
-  background-color: rgba(44, 24, 16, 0.7);
+  background-color: rgba(255, 255, 255, 0.15);
   border: 2px solid var(--white);
   color: var(--white);
   font-weight: 600;
+  backdrop-filter: blur(5px);
 }
 
 .cta-buttons .btn-secondary:hover {
-  background-color: rgba(44, 24, 16, 0.9);
-  transform: translateY(-2px);
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
 }
 
 /* Footer - Enhanced Design */
