@@ -1,52 +1,61 @@
 ---
-description: Documentation for order management system with focus on status handling, notifications, and processing pipeline
+description: Specification for order processing pipeline, status management, and notification system architecture
 ---
 
 
 # order-management-model
 
-## Order Status Pipeline
-- Custom order ID generation using format: `SC{timestamp}{random}`
-- Multi-stage status tracking for restaurant workflow
-- Restaurant-specific status transitions with automated triggers
+## Order Status Flow
+- Initial: PENDING
+- Post-Payment: PROCESSING
+- Kitchen Accepted: IN_PREPARATION 
+- Ready: READY_FOR_PICKUP
+- Completed: COMPLETED
+- Cancelled: CANCELLED
+
+## Core Order Processing Pipeline
+1. Order Creation
+- Validates menu items and prices
+- Applies Geneva-specific tax rate (7.5%)
+- Generates restaurant metadata
+- Creates unique order ID with SC prefix
 Importance Score: 85
 
-## Notification Architecture
-- Dual-channel system (email + SMS) for status updates
-- Restaurant-specific notification templates
-- Automated notifications tied to order state changes
-- Custom pickup time management integration
-Importance Score: 80
-
-## Payment Integration Model
-- Restaurant-specific order processing rules
-- Stripe webhook event handling for payment status
-- Custom fee structure for restaurant marketplace
-- Platform-controlled pricing model
+2. Status Management
+- Multi-stage order tracking
+- Custom order queue management
+- Real-time status updates
+- Restaurant-specific order workflow
 Importance Score: 75
 
-## Core Data Models
+3. Notification Workflow
+- Multi-channel alerts (email, SMS)
+- Restaurant-formatted order details
+- Custom notification templates
+- Status change triggers
+Importance Score: 75
 
-### Order Entity
-- Restaurant-specific pricing
-- Pickup time scheduling
-- Customer notification preferences
-- Tax behavior settings
-Importance Score: 90
+## Data Model Components
+1. Order Entity
+- Order ID (SC prefix format)
+- Status (enum of valid states)
+- Line Items (menu items + quantities)
+- Tax Amount (Geneva rate)
+- Pickup Time
+- Customer Details
 
-### Status Workflow
-- Restaurant-specific order states
-- Automated state transitions
-- Custom validation rules
-- Multi-party notifications
-Importance Score: 85
+2. Status Transitions
+- PENDING → PROCESSING (payment complete)
+- PROCESSING → IN_PREPARATION (kitchen accept)
+- IN_PREPARATION → READY_FOR_PICKUP (food ready)
+- READY_FOR_PICKUP → COMPLETED (customer pickup)
+- Any State → CANCELLED (cancellation)
 
-## Restaurant Platform Integration
-- Merchant onboarding configuration
-- Custom dashboard permissions
-- Loss liability handling
-- Connected account management
-Importance Score: 70
+## Business Rules
+1. Orders require validation against current menu prices
+2. Tax calculations specific to Geneva, NE
+3. Status changes trigger corresponding notifications
+4. Pickup times must be during business hours
 
 $END$
 

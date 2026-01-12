@@ -1,5 +1,5 @@
 ---
-description: Specification for payment processing workflows, Stripe Connect integration, and multi-party payment distribution
+description: Defines payment processing flows, fee calculations, and fund distribution for restaurant marketplace transactions
 ---
 
 
@@ -7,40 +7,52 @@ description: Specification for payment processing workflows, Stripe Connect inte
 
 ## Core Payment Components
 
-### Order Payment Processing (api/webhook.js)
-- Custom order ID generation: `SC{timestamp}{random}`
-- Stripe webhook event handling for restaurant-specific transactions
-- Multi-channel payment confirmation notifications
+1. Checkout Session Creation
+Path: /api/create-checkout-session.js
+- Restaurant-specific order validation
+- Geneva tax rate (7.5%) calculation integration
+- Custom line item generation for food orders
 Importance Score: 85
 
-### Price Management (api/create-checkout-session.js)
-- Restaurant-specific price normalization system
-- Tax behavior configuration per restaurant
-- Custom price conversion and validation rules
+2. Marketplace Payment Distribution
+Path: /api/connect/checkout.js
+- Restaurant commission structure
+- Multi-party payment splitting
+- Restaurant-specific payout handling
 Importance Score: 75
 
-### Platform Payment Distribution (api/connect/checkout.js)
-- Restaurant marketplace fee structure
-- Multi-party payment distribution algorithms
-- Loss liability handling for connected accounts
-Importance Score: 70
+## Payment Business Rules
 
-## Payment Workflows
+1. Tax Calculation
+- Fixed 7.5% rate for Geneva, NE location
+- Applied to subtotal before fees
 
-### Merchant Onboarding
-- Restaurant-specific platform configuration
-- Custom merchant dashboard permissions
-- Connected account setup with restaurant rules
+2. Restaurant Commission Structure
+- Platform fee handling
+- Custom payment flow for food service
+- Restaurant-specific commission rules
 
-### Fee Structure
-- Restaurant marketplace fee calculations
-- Platform-controlled pricing model
-- Restaurant-specific transaction fees
+3. Order Validation
+- Menu pricing verification
+- Restaurant-specific order metadata
+- Dynamic line item validation
 
-### Payment Distribution
-- Multi-party settlement algorithms
+## Payment Flow Steps
+
+1. Order Creation
+- Menu item price validation
+- Tax calculation
+- Restaurant metadata attachment
+
+2. Payment Processing
+- Stripe Connect integration
+- Commission calculation
+- Fund distribution
+
+3. Transaction Completion
+- Multi-channel notification trigger
+- Order status updates
 - Restaurant payout scheduling
-- Platform fee collection workflow
 
 $END$
 

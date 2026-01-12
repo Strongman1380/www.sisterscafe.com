@@ -112,6 +112,14 @@
     </div>
   </div>
 
+  <!-- Load EmailJS for order notifications -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init({ publicKey: "lZj0i25hPAeT7dVGS" });
+    })();
+  </script>
+
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
@@ -158,6 +166,100 @@
     // Get session ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
+
+    // Track if emails have been sent to avoid duplicates
+    let emailsSent = false;
+
+    // Send email notifications via EmailJS
+    async function sendOrderNotifications(order) {
+      // Only send once per page load
+      if (emailsSent) {
+        console.log('Emails already sent, skipping...');
+        return;
+      }
+
+      // Check if we already sent emails for this order (stored in sessionStorage)
+      const emailSentKey = `emailSent_${order.id}`;
+      if (sessionStorage.getItem(emailSentKey)) {
+        console.log('Emails already sent for this order, skipping...');
+        return;
+      }
+
+      try {
+        console.log('Sending order notification emails...');
+
+        // Format order items for email
+        const orderItemsHTML = order.items ? order.items.map(item =>
+          `<li style="margin-bottom: 8px; padding: 8px; background-color: #f9f9f9; border-radius: 4px;">
+            <strong>${item.name || item.description}</strong> x ${item.quantity} = $${((item.amount_total || item.price * item.quantity) / 100).toFixed(2)}
+          </li>`
+        ).join('') : '<li>Order items not available</li>';
+
+        const orderItemsText = order.items ? order.items.map(item =>
+          `${item.name || item.description} x ${item.quantity} = $${((item.amount_total || item.price * item.quantity) / 100).toFixed(2)}`
+        ).join('\n') : 'Order items not available';
+
+        // Calculate amounts
+        const total = (order.amount_total / 100).toFixed(2);
+        const taxAmount = order.tax_amount ? (order.tax_amount / 100).toFixed(2) : '0.00';
+        const subtotal = (order.amount_total / 100 - parseFloat(taxAmount)).toFixed(2);
+
+        // Prepare email parameters
+        const emailParams = {
+          to_email: 'sisterscafe28@gmail.com',
+          from_name: order.customer_name || 'Online Customer',
+          customer_name: order.customer_name || 'Not provided',
+          customer_phone: order.customer_phone || 'Not provided',
+          customer_email: order.customer_email || 'Not provided',
+          pickup_time: order.pickup_time || 'Not specified',
+          order_notes: order.order_notes || 'None',
+          order_number: order.id,
+          invoice_number: 'INV-' + order.id,
+          order_items_html: orderItemsHTML,
+          order_items_text: orderItemsText,
+          subtotal: subtotal,
+          tax: taxAmount,
+          tax_label: 'Tax',
+          total: total,
+          order_date: new Date().toLocaleString(),
+          delivery_address: 'Pickup at Sisters Cafe',
+          payment_status: '✅ PAID ONLINE via Stripe',
+          fees_label: 'Fees',
+          fees: '0.00',
+          tip: '0.00',
+          discount_label: 'Discount',
+          discount: '0.00'
+        };
+
+        // EmailJS configuration
+        const SERVICE_ID = 'service_4x3qqp1';
+        const CAFE_TEMPLATE_ID = 'template_u05esja';
+        const CUSTOMER_TEMPLATE_ID = 'template_9uaylhv';
+
+        if (typeof emailjs !== 'undefined') {
+          // Email 1: Send order notification to Sisters Cafe
+          await emailjs.send(SERVICE_ID, CAFE_TEMPLATE_ID, emailParams);
+          console.log('Order notification sent to Sisters Cafe!');
+
+          // Email 2: Send confirmation to customer (if email provided)
+          if (order.customer_email) {
+            const customerParams = { ...emailParams, to_email: order.customer_email };
+            await emailjs.send(SERVICE_ID, CUSTOMER_TEMPLATE_ID, customerParams);
+            console.log('Confirmation sent to customer!');
+          }
+
+          // Mark emails as sent
+          emailsSent = true;
+          sessionStorage.setItem(emailSentKey, 'true');
+          console.log('All order notifications sent successfully!');
+        } else {
+          console.warn('EmailJS not loaded');
+        }
+      } catch (error) {
+        console.error('Error sending email notifications:', error);
+        // Don't throw - the order was successful, email failure shouldn't break the page
+      }
+    }
 
     // Helper function to show error state
     function showErrorState(message) {
@@ -206,6 +308,9 @@
             document.getElementById('order-id').textContent = order.id;
             document.getElementById('customer-name').textContent = order.customer_name || 'Not available';
             document.getElementById('pickup-time').textContent = order.pickup_time || 'Not specified';
+
+            // Send EmailJS notifications for online payment orders
+            sendOrderNotifications(order);
           } else {
             // Order not found yet - might still be processing
             document.getElementById('order-total').textContent = 'Processing...';

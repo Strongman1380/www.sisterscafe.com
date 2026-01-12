@@ -13,39 +13,50 @@
 - Explain your OBSERVATIONS clearly, then provide REASONING to identify the exact issue. Add console logs when needed to gather more information.
 
 
-## Core Platform Architecture
+## Core Business Systems
 
-### Order Management & Payment Processing (Importance: 85)
-- Restaurant-specific order lifecycle management with Stripe integration
-- Custom order ID generation: `SC{timestamp}{random}`
-- Multi-channel notification system with restaurant-specific templates
-- Automated email and SMS notifications for order status updates
+### Order Processing and Payment (api/create-checkout-session.js)
+- Location-specific tax calculations for Geneva, NE
+- Restaurant menu pricing validation system
+- Order metadata handling for food service
+- Dynamic line item generation
+Importance Score: 85
 
-### Menu Item Price Management (Importance: 75)
-- Custom price normalization and lookup system
-- Restaurant-specific menu item slug generation
-- Food item price conversion and validation
-- Tax behavior settings for restaurant transactions
+### Order Notifications (api/webhook.js)
+- Multi-channel notification workflow for food orders
+- Restaurant-formatted order communications
+- Food service notification templates
+- Order status tracking system
+Importance Score: 75
 
-### Connect Platform Management (Importance: 70)
-- Restaurant-specific merchant onboarding configurations
-- Custom fee structure and loss liability handling
-- Restaurant marketplace pricing model
-- Merchant dashboard permissions management
+### Order Management (api/orders.js)
+- Restaurant order queue management
+- Food service status workflow
+- Order tracking for food operations
+Importance Score: 60
 
-## Domain-Specific Systems
+### Marketplace Integration (api/connect/checkout.js)
+- Restaurant fee structure implementation
+- Food service payment flows
+- Commission calculations
+Importance Score: 65
 
-### Order Notification Workflow
-- Restaurant-specific notification templates
-- Pickup time management system
-- Custom order status progression
-- Dual-path notifications (restaurant + customer)
+## Core Business Rules
+1. Custom menu price validation using slugification
+2. Nebraska tax calculation system
+3. Restaurant pickup scheduling
+4. Multi-stage order notifications
+5. Food service payment processing
 
-### Menu Organization
-- Food item price normalization rules
-- Category-based menu structure
-- Restaurant-specific tax handling
-- Menu item validation logic
+## Business Logic Architecture
+The system centers on restaurant-specific order processing with specialized handling for:
+- Location-based tax calculations
+- Food service notifications
+- Restaurant marketplace operations
+- Order status management
+
+Overall System Importance Score: 71
+(Based on specialized restaurant operations and location-specific requirements)
 
 $END$
 

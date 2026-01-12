@@ -1,52 +1,63 @@
 ---
-description: Restaurant integration specifications for onboarding, account management, and payment flows
+description: Specification for restaurant onboarding, account management, and payment flow integration models
 ---
 
 
 # restaurant-integration-model
 
-## Core Restaurant Integration Components
+## Restaurant Onboarding Flow
 
-### Restaurant Onboarding Flow
-File: api/connect/accounts.js
-- Custom merchant account creation with restaurant-specific validation
-- Restaurant-specific platform configuration and permissions
-- Specialized fee structure for food service merchants
+1. Connect Platform Integration (`api/connect/checkout.js`)
+- Restaurant marketplace fee structure model
+- Commission calculation: Base rate + variable based on order volume
+- Custom payment flows for food service operations
 Importance Score: 85
 
-### Order Processing & Payments
-File: api/webhook.js
-- Restaurant-specific order lifecycle management
-- Custom order ID format: `SC{timestamp}{random}`
-- Multi-channel notification system with restaurant templates
-- Automated order status updates with merchant validation
-Importance Score: 90
+2. Payment Processing Model (`api/create-checkout-session.js`)
+- Menu item price validation system
+- Location-specific tax handling (Geneva, NE)
+- Restaurant order metadata requirements
+Importance Score: 80
 
-### Menu & Pricing Management
-File: api/create-checkout-session.js
-- Restaurant-specific price normalization rules
-- Custom tax behavior settings per merchant
-- Menu item slug generation with business validation
+## Account Management
+
+Order Management System (`api/orders.js`)
+- Restaurant-specific order queue system
+- Custom status workflow for food service
+- Real-time order tracking integration
 Importance Score: 75
 
-## Business Validation Rules
+## Notification Integration
 
-### Restaurant Account Rules
-- Merchant-specific dashboard permissions
-- Custom fee structures based on restaurant type
-- Platform-controlled pricing model enforcement
+Multi-Channel Alert System (`api/webhook.js`)
+- Restaurant-specific order formatting
+- Custom food order notification templates
+- Order status tracking specific to restaurant workflows
+Importance Score: 70
 
-### Payment Flow Validation
-- Restaurant-specific order processing rules
-- Custom notification templates per merchant
-- Specialized pickup time management
-- Dual notification paths for restaurant and customer
+## Core Business Rules
 
-### Menu Management Rules
-- Food item price normalization requirements
-- Restaurant-specific tax handling
-- Menu category organization validation
-- Custom food service marketplace rules
+1. Restaurant Payment Flow
+- Custom slugification for menu pricing validation
+- Nebraska tax calculation requirements
+- Restaurant-specific commission handling
+
+2. Order Processing Requirements
+- Multi-stage notification workflow
+- Restaurant pickup time management
+- Food service specific payment processing
+
+## Data Models
+
+1. Restaurant Account Model
+- Commission structure
+- Payment flow configuration
+- Order processing requirements
+
+2. Order Processing Model
+- Menu validation rules
+- Tax calculation parameters
+- Restaurant-specific metadata
 
 $END$
 
