@@ -451,7 +451,50 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-  
+
+  // Handle payment method toggle
+  const paymentOnline = document.getElementById('payment-online');
+  const paymentInstore = document.getElementById('payment-instore');
+  const paymentInfoOnline = document.getElementById('payment-info-online');
+  const paymentInfoInstore = document.getElementById('payment-info-instore');
+  const submitOrderBtnRef = document.getElementById('submit-order');
+
+  function updatePaymentMethodUI() {
+    const isOnline = paymentOnline && paymentOnline.checked;
+
+    // Update info boxes
+    if (paymentInfoOnline) paymentInfoOnline.style.display = isOnline ? 'block' : 'none';
+    if (paymentInfoInstore) paymentInfoInstore.style.display = isOnline ? 'none' : 'block';
+
+    // Update button text and style
+    if (submitOrderBtnRef) {
+      if (isOnline) {
+        submitOrderBtnRef.innerHTML = '<i class="fas fa-credit-card"></i> Pay & Place Order';
+        submitOrderBtnRef.style.background = 'linear-gradient(135deg, #7A9B76 0%, #96B591 100%)';
+      } else {
+        submitOrderBtnRef.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
+        submitOrderBtnRef.style.background = 'linear-gradient(135deg, #C46036 0%, #E07B4F 100%)';
+      }
+    }
+
+    // Update radio button styling
+    if (paymentOnline && paymentOnline.parentElement) {
+      paymentOnline.parentElement.style.borderColor = isOnline ? '#7A9B76' : '#ddd';
+      paymentOnline.parentElement.style.backgroundColor = isOnline ? '#f0f7ef' : '#fff';
+    }
+    if (paymentInstore && paymentInstore.parentElement) {
+      paymentInstore.parentElement.style.borderColor = isOnline ? '#ddd' : '#C46036';
+      paymentInstore.parentElement.style.backgroundColor = isOnline ? '#fff' : '#FFF8F0';
+    }
+  }
+
+  if (paymentOnline) {
+    paymentOnline.addEventListener('change', updatePaymentMethodUI);
+  }
+  if (paymentInstore) {
+    paymentInstore.addEventListener('change', updatePaymentMethodUI);
+  }
+
   // Handle confirmation modal close
   if (closeConfirmationBtn) {
     closeConfirmationBtn.addEventListener('click', closeConfirmationModal);
@@ -600,9 +643,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
+      // Check which payment method is selected
+      const paymentMethodEl = document.querySelector('input[name="payment-method"]:checked');
+      const paymentMethod = paymentMethodEl ? paymentMethodEl.value : 'online';
+      const isPayingOnline = paymentMethod === 'online';
+
       // Disable submit button to prevent double submission
       submitOrderBtn.disabled = true;
-      submitOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Order...';
+      submitOrderBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
       try {
         // Get formatted pickup time
@@ -620,143 +668,173 @@ document.addEventListener('DOMContentLoaded', function() {
           formattedPickupTime = timeMap[pickupTime] || pickupTime;
         }
 
-        // Calculate totals
-        let subtotal = 0;
-        cart.forEach(item => {
-          subtotal += item.price * item.quantity;
-        });
-        const tax = subtotal * 0.075;
-        const total = subtotal + tax;
+        if (isPayingOnline) {
+          // ===== PAY ONLINE: Redirect to Stripe Checkout =====
+          console.log('💳 Processing online payment via Stripe...');
 
-        // Format order items for email
-        const orderItemsHTML = cart.map(item =>
-          `<li style="margin-bottom: 8px; padding: 8px; background-color: #f9f9f9; border-radius: 4px;">
-            <strong>${item.name}</strong> x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}
-          </li>`
-        ).join('');
+          // Build items array for Stripe (price in cents)
+          const items = cart.map(item => ({
+            name: item.name,
+            price: Math.round(item.price * 100),
+            quantity: item.quantity
+          }));
 
-        const orderItemsText = cart.map(item =>
-          `${item.name} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`
-        ).join('\n');
+          // Build customer object
+          const customer = {
+            name: customerName,
+            email: customerEmail,
+            phone: customerPhone,
+            pickup_time: formattedPickupTime,
+            order_notes: orderNotes || ''
+          };
 
-        // Generate order number
-        const orderNumber = 'SC' + Date.now().toString().slice(-8);
+          // Get API base URL from config
+          const apiBaseUrl = window.APP_CONFIG?.API_BASE_URL || '';
+          console.log('🔄 Creating Stripe checkout session...');
+          console.log('📦 API URL:', `${apiBaseUrl}/api/create-checkout-session`);
 
-        // Prepare email content using EmailJS
-        const emailParams = {
-          to_email: 'sisterscafe28@gmail.com',
-          from_name: customerName,
-          customer_name: customerName,
-          customer_phone: customerPhone,
-          customer_email: customerEmail,
-          pickup_time: formattedPickupTime,
-          order_notes: orderNotes || 'None',
-          order_number: orderNumber,
-          invoice_number: 'INV-' + orderNumber,
-          order_items_html: orderItemsHTML,
-          order_items_text: orderItemsText,
-          subtotal: subtotal.toFixed(2),
-          tax: tax.toFixed(2),
-          tax_label: 'Tax (7.5%)',
-          total: total.toFixed(2),
-          order_date: new Date().toLocaleString(),
-          // Additional fields for customer invoice
-          delivery_address: 'Pickup at Sisters Cafe',
-          payment_status: 'Pay at Pickup',
-          fees_label: 'Fees',
-          fees: '0.00',
-          tip: '0.00',
-          discount_label: 'Discount',
-          discount: '0.00'
-        };
+          // Call create-checkout-session API
+          const response = await fetch(`${apiBaseUrl}/api/create-checkout-session`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ items, customer })
+          });
 
-        // Send TWO emails using EmailJS
-        const SERVICE_ID = 'service_4x3qqp1';
-        const CAFE_TEMPLATE_ID = 'template_u05esja';      // Email to Sisters Cafe
-        const CUSTOMER_TEMPLATE_ID = 'template_9uaylhv';  // Invoice to customer
-
-        console.log('🔧 EmailJS Configuration:', {
-          emailjsLoaded: typeof emailjs !== 'undefined',
-          serviceId: SERVICE_ID,
-          cafeTemplateId: CAFE_TEMPLATE_ID,
-          customerTemplateId: CUSTOMER_TEMPLATE_ID
-        });
-
-        if (typeof emailjs !== 'undefined' && SERVICE_ID !== 'YOUR_SERVICE_ID') {
+          const responseText = await response.text();
+          let result;
           try {
-            console.log('📤 Sending emails...');
+            result = JSON.parse(responseText);
+          } catch (parseError) {
+            console.error('❌ Failed to parse response:', parseError);
+            throw new Error('Invalid response from server');
+          }
+
+          if (!response.ok) {
+            throw new Error(result.error || `HTTP ${response.status}: Failed to create checkout session`);
+          }
+
+          if (!result.url) {
+            throw new Error('No checkout URL received from server');
+          }
+
+          // Save cart to localStorage before redirect (for cancel recovery)
+          localStorage.setItem('sistersCafeCart', JSON.stringify(cart));
+
+          // Redirect to Stripe Checkout
+          console.log('🚀 Redirecting to Stripe Checkout...');
+          window.location.href = result.url;
+
+        } else {
+          // ===== PAY AT PICKUP: Send email notification via EmailJS =====
+          console.log('🏪 Processing pay-at-pickup order via EmailJS...');
+
+          // Calculate totals
+          let subtotal = 0;
+          cart.forEach(item => {
+            subtotal += item.price * item.quantity;
+          });
+          const tax = subtotal * 0.075;
+          const total = subtotal + tax;
+
+          // Format order items for email
+          const orderItemsHTML = cart.map(item =>
+            `<li style="margin-bottom: 8px; padding: 8px; background-color: #f9f9f9; border-radius: 4px;">
+              <strong>${item.name}</strong> x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}
+            </li>`
+          ).join('');
+
+          const orderItemsText = cart.map(item =>
+            `${item.name} x ${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`
+          ).join('\n');
+
+          // Generate order number
+          const orderNumber = 'SC' + Date.now().toString().slice(-8);
+
+          // Prepare email content using EmailJS
+          const emailParams = {
+            to_email: 'sisterscafe28@gmail.com',
+            from_name: customerName,
+            customer_name: customerName,
+            customer_phone: customerPhone,
+            customer_email: customerEmail,
+            pickup_time: formattedPickupTime,
+            order_notes: orderNotes || 'None',
+            order_number: orderNumber,
+            invoice_number: 'INV-' + orderNumber,
+            order_items_html: orderItemsHTML,
+            order_items_text: orderItemsText,
+            subtotal: subtotal.toFixed(2),
+            tax: tax.toFixed(2),
+            tax_label: 'Tax (7.5%)',
+            total: total.toFixed(2),
+            order_date: new Date().toLocaleString(),
+            delivery_address: 'Pickup at Sisters Cafe',
+            payment_status: '💵 PAY AT PICKUP',
+            fees_label: 'Fees',
+            fees: '0.00',
+            tip: '0.00',
+            discount_label: 'Discount',
+            discount: '0.00'
+          };
+
+          // Send emails using EmailJS
+          const SERVICE_ID = 'service_4x3qqp1';
+          const CAFE_TEMPLATE_ID = 'template_u05esja';
+          const CUSTOMER_TEMPLATE_ID = 'template_9uaylhv';
+
+          if (typeof emailjs !== 'undefined') {
+            console.log('📤 Sending order notifications...');
 
             // Email 1: Send order notification to Sisters Cafe
-            console.log('📧 Sending order notification to Sisters Cafe...');
-            const cafeResponse = await emailjs.send(SERVICE_ID, CAFE_TEMPLATE_ID, emailParams);
-            console.log('✅ Order notification sent to sisterscafe28@gmail.com!');
+            await emailjs.send(SERVICE_ID, CAFE_TEMPLATE_ID, emailParams);
+            console.log('✅ Order notification sent to Sisters Cafe!');
 
-            // Email 2: Send invoice/confirmation to customer
-            console.log('📧 Sending invoice to customer at ' + customerEmail + '...');
+            // Email 2: Send confirmation to customer
             const customerParams = { ...emailParams, to_email: customerEmail };
-            const customerResponse = await emailjs.send(SERVICE_ID, CUSTOMER_TEMPLATE_ID, customerParams);
-            console.log('✅ Invoice sent to customer at ' + customerEmail + '!');
-
-            console.log('🎉 Both emails sent successfully!');
-          } catch (emailError) {
-            console.error('❌ Email sending failed:', emailError);
-            console.error('Error details:', {
-              message: emailError.message,
-              text: emailError.text,
-              status: emailError.status
-            });
-            console.log('📧 Order details (email not sent):', emailParams);
+            await emailjs.send(SERVICE_ID, CUSTOMER_TEMPLATE_ID, customerParams);
+            console.log('✅ Confirmation sent to customer!');
+          } else {
+            console.log('📧 EmailJS not loaded. Order details:', emailParams);
           }
-        } else {
-          // EmailJS not configured - just log order for development/testing
-          console.log('📧 EmailJS not configured. Order logged to console:');
-          console.log('To: sisterscafe28@gmail.com');
-          console.log('Order Number:', orderNumber);
-          console.log('Customer:', customerName);
-          console.log('Phone:', customerPhone);
-          console.log('Email:', customerEmail);
-          console.log('Pickup Time:', formattedPickupTime);
-          console.log('Order Items:');
-          cart.forEach(item => {
-            console.log(`  - ${item.name} x${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`);
-          });
-          console.log('Subtotal: $' + subtotal.toFixed(2));
-          console.log('Tax: $' + tax.toFixed(2));
-          console.log('Total: $' + total.toFixed(2));
-          console.log('Notes:', orderNotes || 'None');
-          console.log('\n💡 To enable email notifications, configure EmailJS at https://www.emailjs.com/');
+
+          // Close checkout modal
+          closeModal();
+
+          // Show confirmation modal
+          const orderNumberEl = document.getElementById('order-number');
+          const confNameEl = document.getElementById('conf-name');
+          const confTimeEl = document.getElementById('conf-time');
+          const confTotalEl = document.getElementById('conf-total');
+
+          if (orderNumberEl) orderNumberEl.textContent = orderNumber;
+          if (confNameEl) confNameEl.textContent = customerName;
+          if (confTimeEl) confTimeEl.textContent = formattedPickupTime;
+          if (confTotalEl) confTotalEl.textContent = '$' + total.toFixed(2) + ' (Pay at pickup)';
+
+          openConfirmationModal();
+
+          // Clear the cart
+          cart = [];
+          updateCart();
+
+          // Reset form
+          document.getElementById('online-order-form').reset();
         }
 
-        // Close checkout modal
-        closeModal();
-
-        // Show confirmation modal with null checks
-        const orderNumberEl = document.getElementById('order-number');
-        const confNameEl = document.getElementById('conf-name');
-        const confTimeEl = document.getElementById('conf-time');
-        const confTotalEl = document.getElementById('conf-total');
-
-        if (orderNumberEl) orderNumberEl.textContent = orderNumber;
-        if (confNameEl) confNameEl.textContent = customerName;
-        if (confTimeEl) confTimeEl.textContent = formattedPickupTime;
-        if (confTotalEl) confTotalEl.textContent = '$' + total.toFixed(2);
-
-        openConfirmationModal();
-
-        // Clear the cart
-        cart = [];
-        updateCart();
-
-        // Reset form
-        document.getElementById('online-order-form').reset();
-
       } catch (error) {
-        console.error('Error submitting order:', error);
-        alert('Sorry, there was an error submitting your order. Please try again or call us at (402) 759-4144 to place your order.');
+        console.error('Order error:', error);
+        alert('Sorry, there was an error processing your order. Please try again or call us at (402) 759-4144.');
 
         // Re-enable submit button
         submitOrderBtn.disabled = false;
-        submitOrderBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
+        const isOnline = document.getElementById('payment-online')?.checked;
+        if (isOnline) {
+          submitOrderBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pay & Place Order';
+        } else {
+          submitOrderBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Order';
+        }
       }
     });
   }

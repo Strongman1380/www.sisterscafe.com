@@ -296,19 +296,39 @@
             <textarea id="order-notes" name="order-notes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;" placeholder="Any dietary restrictions or special requests?"></textarea>
           </div>
 
-          <div style="background-color: #FFF8F0; padding: 15px; border-radius: 8px; border-left: 4px solid #F4A259; margin-top: 20px;">
+          <div class="form-group" style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600;"><i class="fas fa-wallet"></i> Payment Method *</label>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 16px; border: 2px solid #7A9B76; border-radius: 8px; background-color: #f0f7ef; flex: 1; min-width: 140px;">
+                <input type="radio" name="payment-method" id="payment-online" value="online" checked style="width: 18px; height: 18px; accent-color: #7A9B76;">
+                <span><i class="fas fa-credit-card" style="color: #7A9B76;"></i> Pay Online</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 12px 16px; border: 2px solid #ddd; border-radius: 8px; background-color: #fff; flex: 1; min-width: 140px;">
+                <input type="radio" name="payment-method" id="payment-instore" value="instore" style="width: 18px; height: 18px; accent-color: #C46036;">
+                <span><i class="fas fa-store" style="color: #C46036;"></i> Pay at Pickup</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="payment-info-online" style="background-color: #f0f7ef; padding: 15px; border-radius: 8px; border-left: 4px solid #7A9B76; margin-top: 20px;">
             <p style="margin: 0; font-size: 0.95rem; color: #6B5D56;">
-              <i class="fas fa-info-circle"></i> <strong>Payment:</strong> Pay in cash or card when you pick up your order at the cafe.
+              <i class="fas fa-lock"></i> <strong>Secure Payment:</strong> You'll be redirected to Stripe to complete your payment securely. Tax will be calculated automatically.
+            </p>
+          </div>
+
+          <div id="payment-info-instore" style="background-color: #FFF8F0; padding: 15px; border-radius: 8px; border-left: 4px solid #F4A259; margin-top: 20px; display: none;">
+            <p style="margin: 0; font-size: 0.95rem; color: #6B5D56;">
+              <i class="fas fa-info-circle"></i> <strong>Pay at Pickup:</strong> Your order will be submitted and you'll pay when you arrive at Sisters Cafe. We accept cash or card.
             </p>
           </div>
 
           <!-- Form buttons inside form for proper handling -->
           <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button type="button" class="btn" id="cancel-order" style="background-color: #6B5D56; flex: 1;">
+            <button type="button" class="btn" id="cancel-order" style="background-color: #6B5D56; flex: 1; color: white;">
               <i class="fas fa-times"></i> Cancel
             </button>
             <button type="button" class="btn" id="submit-order" style="background: linear-gradient(135deg, #7A9B76 0%, #96B591 100%); color: white; font-weight: bold; flex: 2;">
-              <i class="fas fa-paper-plane"></i> Submit Order
+              <i class="fas fa-credit-card"></i> Pay & Place Order
             </button>
           </div>
         </form>
@@ -368,21 +388,19 @@
     }
   </style>
 
-  <!-- Load EmailJS for email notifications -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script type="text/javascript">
-    // Initialize EmailJS
+  <!-- Load EmailJS for pay-at-pickup orders -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
     (function() {
-      emailjs.init('GrZesY7oeZxe3C2TS'); // EmailJS public key
+      emailjs.init({ publicKey: "lZj0i25hPAeT7dVGS" });
     })();
   </script>
-
   <!-- Load configuration first -->
   <script src="config.js"></script>
   <!-- Load menu data -->
   <script src="menu-data.js"></script>
   <!-- Load the standalone menu script -->
-  <script src="menu-script.js?v=3.3"></script>
+  <script src="menu-script.js?v=3.4"></script>
   <!-- Then load the main script for other functionality -->
   <script src="script.js"></script>
 </body>

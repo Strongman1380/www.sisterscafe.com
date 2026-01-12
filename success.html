@@ -77,6 +77,8 @@
       <div class="order-details" id="order-details">
         <h3><i class="fas fa-receipt"></i> Order Details</h3>
         <p><strong>Order ID:</strong> <span id="order-id">Loading...</span></p>
+        <p><strong>Name:</strong> <span id="customer-name">Loading...</span></p>
+        <p><strong>Pickup Time:</strong> <span id="pickup-time">Loading...</span></p>
         <p><strong>Total Paid:</strong> <span id="order-total">Loading...</span></p>
         <p><strong>Payment Status:</strong> <span style="color: var(--secondary-color);">✅ Paid</span></p>
       </div>
@@ -156,33 +158,75 @@
     // Get session ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const sessionId = urlParams.get('session_id');
-    
-    if (sessionId) {
-      // Show a shortened session ID for reference
+
+    // Helper function to show error state
+    function showErrorState(message) {
+      const orderDetails = document.getElementById('order-details');
+      orderDetails.innerHTML = `
+        <h3><i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i> ${message}</h3>
+        <p>Your cart has been preserved. You can try again or contact the restaurant.</p>
+        <button onclick="retryFetch()" class="btn" style="background-color: var(--primary-color); color: white; margin-top: 1rem;">
+          <i class="fas fa-redo"></i> Retry
+        </button>
+      `;
+    }
+
+    // Retry function
+    function retryFetch() {
+      if (sessionId) {
+        fetchOrderDetails(sessionId);
+      }
+    }
+
+    // Fetch order details function
+    function fetchOrderDetails(sessionId) {
+      // Show loading state
       document.getElementById('order-id').textContent = sessionId.substring(8, 28) + '...';
-      
-      // Try to fetch order details from the server
+      document.getElementById('order-total').textContent = 'Loading...';
+      document.getElementById('customer-name').textContent = 'Loading...';
+      document.getElementById('pickup-time').textContent = 'Loading...';
+
       const apiBaseUrl = window.location.hostname === 'localhost' ? 'http://localhost:3001' : '';
-      
+
       fetch(`${apiBaseUrl}/api/orders`)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch order details');
+          }
+          return response.json();
+        })
         .then(orders => {
           // Find the order with matching session ID
           const order = orders.find(o => o.stripe_session_id === sessionId);
           if (order) {
+            // Order confirmed - now safe to clear the cart
+            localStorage.removeItem('sistersCafeCart');
+
             document.getElementById('order-total').textContent = `$${(order.amount_total / 100).toFixed(2)}`;
             document.getElementById('order-id').textContent = order.id;
+            document.getElementById('customer-name').textContent = order.customer_name || 'Not available';
+            document.getElementById('pickup-time').textContent = order.pickup_time || 'Not specified';
           } else {
+            // Order not found yet - might still be processing
             document.getElementById('order-total').textContent = 'Processing...';
+            document.getElementById('customer-name').textContent = 'Processing...';
+            document.getElementById('pickup-time').textContent = 'Processing...';
+            // Don't clear cart if order not confirmed yet
           }
         })
         .catch(error => {
           console.error('Error fetching order details:', error);
-          document.getElementById('order-total').textContent = 'Processing...';
+          showErrorState('Unable to load order details');
         });
+    }
+
+    if (sessionId) {
+      fetchOrderDetails(sessionId);
     } else {
       document.getElementById('order-id').textContent = 'No session found';
       document.getElementById('order-total').textContent = 'N/A';
+      document.getElementById('customer-name').textContent = 'N/A';
+      document.getElementById('pickup-time').textContent = 'N/A';
     }
   </script>
 </body>

@@ -7,7 +7,7 @@ const config = {
   },
   production: {
     API_BASE_URL: '', // Empty string means same domain (Vercel will handle this)
-    STRIPE_PUBLISHABLE_KEY: 'pk_test_51RpthwFwMQSBzM6V7FLAcm1EIcBP2ygsvRHWCVskbpDlX5AK0QWnbL5nHoCWYQV7KA4DQUVcLhsQpAVv150y9XHs00IkXAQLMj'
+    STRIPE_PUBLISHABLE_KEY: 'pk_live_51SnpwoJSpnn91EJbexTOQwfz8TBfYpQ5k4h3JypNGFbBGW3LGmpXXHoBEV7Qycl4N4U6urU1jIJx0a5Ybbt3H4Mi00w6vChqnl'
   }
 };
 

@@ -1,7 +1,54 @@
 import Stripe from 'stripe';
-import { menuData } from '../menu-data.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+// Menu data loaded inline for server-side use
+const menuData = [
+  { category: "Appetizers", items: [
+    { name: "Mini Tacos", price: 5.00 }, { name: "French Fries", price: 4.50 },
+    { name: "Tator Kegs (Cheddar Jalapeno)", price: 6.00 }, { name: "Tator Kegs (Cheddar Bacon)", price: 6.00 },
+    { name: "Onion Chips", price: 5.00 }, { name: "Cheese Balls", price: 5.00 },
+    { name: "Spicy Cheese Balls", price: 5.00 }, { name: "Breaded Mushrooms", price: 5.00 },
+    { name: "Breaded Cauliflower", price: 5.00 }, { name: "Cinnamon Roll", price: 3.25 }
+  ]},
+  { category: "Soups", items: [{ name: "Soup Bowl", price: 4.50 }]},
+  { category: "Sandwiches", items: [
+    { name: "Hamburgers", price: 8.00 }, { name: "Cheeseburger", price: 8.50 },
+    { name: "Double Cheeseburger", price: 13.50 }, { name: "Bacon Cheeseburger", price: 11.00 },
+    { name: "Double Bacon Cheeseburger", price: 13.50 }, { name: "Swiss Mushroom Burger", price: 9.00 },
+    { name: "Western Burger", price: 12.95 }, { name: "Patty Melt", price: 9.00 },
+    { name: "Pork Tenderloin", price: 8.00 }, { name: "Fish Sandwich", price: 8.00 },
+    { name: "Chicken Parmesan", price: 9.00 },
+    { name: "Taco Burger (Seasoned Beef, Cheese Mix, Salsa, Lettuce, Tomatoes, and Sour Cream)", price: 10.95 }
+  ]},
+  { category: "Dinner Meals", items: [
+    { name: "Chicken Fried Steak", price: 11.00 }, { name: "Hamburger Steak", price: 11.00 },
+    { name: "Salisbury Steak", price: 11.00 }, { name: "Chicken Parmesan", price: 11.00 },
+    { name: "Pork Tenderloin", price: 11.00 }
+  ]},
+  { category: "Baskets", items: [
+    { name: "Fried Fish Basket", price: 10.00 }, { name: "Mini Corn Dog Basket", price: 10.00 }
+  ]},
+  { category: "Salads", items: [
+    { name: "Green Salad", price: 4.00 }, { name: "Chef Salad (Chicken)", price: 9.50 },
+    { name: "Chef Salad (Ham)", price: 9.50 }
+  ]},
+  { category: "Sides", items: [
+    { name: "Bacon (4 Slices)", price: 5.00 }, { name: "Sausage (2 Patties)", price: 5.00 },
+    { name: "Ham (2 Slices)", price: 5.00 }, { name: "Hashbrowns", price: 3.00 },
+    { name: "Toast (2 Slices)", price: 3.00 }
+  ]},
+  { category: "Eggs & Toast", items: [
+    { name: "1 Egg & Toast", price: 6.00 }, { name: "1 Egg & Toast with Meat", price: 8.00 },
+    { name: "2 Eggs & Toast", price: 7.00 }, { name: "2 Eggs & Toast with Meat", price: 9.00 },
+    { name: "Omelet Combo", price: 14.00 }
+  ]},
+  { category: "Drinks", items: [
+    { name: "Soda", price: 2.00 }, { name: "Hot Tea", price: 2.00 }, { name: "Iced Tea", price: 2.00 },
+    { name: "Lemonade", price: 2.00 }, { name: "Milk Small", price: 1.50 }, { name: "Milk Large", price: 2.00 },
+    { name: "OJ Small", price: 1.50 }, { name: "OJ Large", price: 2.00 }
+  ]}
+];
 
 function buildPriceIndex(data = []) {
   const index = new Map();
@@ -121,16 +168,65 @@ export default async function handler(req, res) {
     const host = req.headers.host;
     const domain = `${protocol}://${host}`;
 
+    // Calculate tax using Stripe Tax Calculation API
+    // Sisters Cafe address in Geneva, Nebraska
+    const taxCalculationItems = lineItems.map(item => ({
+      amount: item.price_data.unit_amount * item.quantity,
+      quantity: item.quantity,
+      reference: item.price_data.product_data.name,
+      tax_code: 'txcd_40060003', // Restaurant food and beverages - for immediate consumption
+    }));
+
+    let taxAmount = 0;
+    let taxCalculation = null;
+    
+    try {
+      // Calculate tax based on restaurant's location (pickup orders)
+      taxCalculation = await stripe.tax.calculations.create({
+        currency: 'usd',
+        line_items: taxCalculationItems,
+        customer_details: {
+          address: {
+            // Sisters Cafe location - customer picks up here
+            line1: '606 G St',
+            city: 'Geneva',
+            state: 'NE',
+            postal_code: '68361',
+            country: 'US',
+          },
+          address_source: 'shipping', // For pickup, use restaurant address
+        },
+      });
+      
+      taxAmount = taxCalculation.tax_amount_exclusive;
+      console.log('Tax calculated:', taxAmount, 'cents for order total:', taxCalculation.amount_total);
+    } catch (taxError) {
+      console.warn('Tax calculation failed, proceeding without tax:', taxError.message);
+      // Continue without tax if calculation fails
+    }
+
+    // Build final line items including tax if calculated
+    const finalLineItems = [...lineItems];
+    
+    if (taxAmount > 0) {
+      finalLineItems.push({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: 'Sales Tax',
+            description: 'Nebraska state and local sales tax'
+          },
+          unit_amount: taxAmount
+        },
+        quantity: 1
+      });
+    }
+
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: lineItems,
+      line_items: finalLineItems,
       mode: 'payment',
-      // Note: automatic_tax requires business address configured in Stripe Dashboard
-      // Disable for development, enable for production after configuring
-      // automatic_tax: {
-      //   enabled: true,
-      // },
       customer_creation: 'always',
       success_url: `${domain}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${domain}/cancel.html`,
@@ -139,7 +235,9 @@ export default async function handler(req, res) {
         customer_name: customer?.name || '',
         customer_phone: customer?.phone || '',
         pickup_time: customer?.pickup_time || '',
-        order_notes: customer?.order_notes || ''
+        order_notes: customer?.order_notes || '',
+        tax_calculation_id: taxCalculation?.id || '',
+        tax_amount: taxAmount.toString()
       }
     });
 

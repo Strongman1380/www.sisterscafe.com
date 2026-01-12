@@ -112,5 +112,7 @@ if (typeof document !== 'undefined') {
     document.dispatchEvent(new CustomEvent('menuDataLoaded', { detail: menuData }));
 }
 
-// ES module export (for Node.js API use only)
-// export { menuData };
+// ES module export (for Node.js API use only - browsers use window.menuData)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { menuData };
+}
